@@ -8,6 +8,7 @@
     <artifactId>club-mgmt-parent</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <name>Spring cloud parent pom for club management application.</name>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
@@ -21,6 +22,8 @@
     <modules>
         <module>discovery-service</module>
         <module>config-service</module>
+        <module>gateway-service</module>
+        <module>client-service</module>
     </modules>
 
     <dependencies>
