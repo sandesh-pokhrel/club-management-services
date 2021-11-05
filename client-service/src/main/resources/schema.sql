@@ -1,0 +1,2 @@
+create database club_management_clients;
+use club_management_clients;
