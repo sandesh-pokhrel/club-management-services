@@ -1,5 +1,6 @@
 package com.fitness.clientservice.service;
 
+import com.fitness.clientservice.common.Constants;
 import com.fitness.clientservice.exception.AlreadyExistsException;
 import com.fitness.clientservice.model.Client;
 import com.fitness.clientservice.repository.ClientRepository;
@@ -24,7 +25,7 @@ public class ClientService extends GenericService {
         String orderBy = getOrderBy(paramMap, "username");
         Sort.Direction order = getOrder(paramMap);
         String search = getSearch(paramMap);
-        Pageable pageable = PageRequest.of(page, 3,
+        Pageable pageable = PageRequest.of(page, Constants.PAGE_SIZE,
                 order, orderBy);
         if (Objects.nonNull(search))
             return this.clientRepository.search(search, pageable);
@@ -32,14 +33,18 @@ public class ClientService extends GenericService {
     }
 
     public Client getClientByUsername(String username) {
-        return this.clientRepository.findById(username).orElse(Client.builder().lastName("don").build());
+        return this.clientRepository.findById(username).orElse(null);
     }
 
     // TODO: Check the uniqueness of cell number and email as well
     public Client saveClient(Client client) {
         String username = client.getUsername();
-        if (this.clientRepository.findById(username).isPresent())
-            throw new AlreadyExistsException(String.format("User with username %s already exists!", username));
-        return this.clientRepository.findById(username).orElse(null);
+        if (this.clientRepository.existsById(username))
+            throw new AlreadyExistsException(String.format("Username (%s) already exists!", username));
+        else if (this.clientRepository.existsByCellPhone(client.getCellPhone()))
+            throw new AlreadyExistsException("Cellphone already exists!");
+        else if (this.clientRepository.existsByEmail(client.getEmail()))
+            throw new AlreadyExistsException("Email already exists!");
+        return this.clientRepository.save(client);
     }
 }

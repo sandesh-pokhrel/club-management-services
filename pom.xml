@@ -24,6 +24,7 @@
         <module>config-service</module>
         <module>gateway-service</module>
         <module>client-service</module>
+        <module>auth-service</module>
     </modules>
 
     <dependencies>
