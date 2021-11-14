@@ -27,3 +27,4 @@ values ('sandesh4', 'Sandesh', 'Pokhrel', 'M', '1996-07-03', 'sandesh.pokhrel564
         '98421009644', '', '', 'Rimesh Sapkota', '9832445353', 'Biratnagar',
         'Biratnagar', 'Province 1', 56613, false);
 
+COMMIT;
