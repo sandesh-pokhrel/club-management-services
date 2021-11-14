@@ -2,6 +2,7 @@ package com.fitness.clientservice.service;
 
 import com.fitness.clientservice.common.Constants;
 import com.fitness.clientservice.exception.AlreadyExistsException;
+import com.fitness.clientservice.exception.NotFoundException;
 import com.fitness.clientservice.model.Client;
 import com.fitness.clientservice.repository.ClientRepository;
 import lombok.AllArgsConstructor;
@@ -36,7 +37,6 @@ public class ClientService extends GenericService {
         return this.clientRepository.findById(username).orElse(null);
     }
 
-    // TODO: Check the uniqueness of cell number and email as well
     public Client saveClient(Client client) {
         String username = client.getUsername();
         if (this.clientRepository.existsById(username))
@@ -44,6 +44,16 @@ public class ClientService extends GenericService {
         else if (this.clientRepository.existsByCellPhone(client.getCellPhone()))
             throw new AlreadyExistsException("Cellphone already exists!");
         else if (this.clientRepository.existsByEmail(client.getEmail()))
+            throw new AlreadyExistsException("Email already exists!");
+        return this.clientRepository.save(client);
+    }
+
+    public Client updateClient(Client client, String username) {
+        if (!this.clientRepository.existsById(username))
+            throw new NotFoundException(String.format("Cannot update. Username (%s) not found!", username));
+        else if (this.clientRepository.existsByCellPhoneAndUsernameNot(client.getCellPhone(), username))
+            throw new AlreadyExistsException("Cellphone already exists!");
+        else if (this.clientRepository.existsByEmailAndUsernameNot(client.getEmail(), username))
             throw new AlreadyExistsException("Email already exists!");
         return this.clientRepository.save(client);
     }

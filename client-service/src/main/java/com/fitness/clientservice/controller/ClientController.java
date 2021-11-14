@@ -55,4 +55,13 @@ public class ClientController {
     public Client saveClient(@Valid @RequestBody Client client) {
         return this.clientService.saveClient(client);
     }
+
+    @PutMapping("/{username}")
+    @ResponseStatus(value = HttpStatus.CREATED)
+    @ApiOperation(value = "Updates the client after validation")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Client updated"),
+            @ApiResponse(code = 404, message = "Client not found")})
+    public Client updateClient(@Valid @RequestBody Client client, @PathVariable String username) {
+        return this.clientService.updateClient(client, username);
+    }
 }

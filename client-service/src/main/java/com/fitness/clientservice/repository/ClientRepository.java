@@ -12,7 +12,10 @@ import org.springframework.stereotype.Repository;
 public interface ClientRepository extends JpaRepository<Client, String> {
 
     boolean existsByEmail(String email);
+    boolean existsByEmailAndUsernameNot(String email, String username);
+
     boolean existsByCellPhone(String cellPhone);
+    boolean existsByCellPhoneAndUsernameNot(String cellPhone, String username);
 
     @Query("SELECT c FROM Client c " +
             "WHERE lower(c.username) like %:searchText% OR lower(c.firstName) like %:searchText% OR " +
