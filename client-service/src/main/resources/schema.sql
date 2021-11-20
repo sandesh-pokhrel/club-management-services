@@ -1,6 +1,8 @@
+drop database if exists club_management_clients;
 create database club_management_clients;
 use club_management_clients;
 
+drop table if exists client;
 create table client
 (
     username                varchar(30) not null,
@@ -20,4 +22,37 @@ create table client
     postal_code             integer,
     is_prospect             boolean,
     constraint pk_client_username primary key (username)
+);
+
+drop table if exists questionnaire;
+create table questionnaire
+(
+    id         integer                          not null auto_increment,
+    question   varchar(3000) character set utf8 not null,
+    input_type varchar(100)                     not null,
+    options    varchar(5000),
+    enabled    boolean,
+    constraint pk_questionnaire_id primary key (id)
+);
+
+drop table if exists client_questionnaire;
+create table client_questionnaire
+(
+    id              integer     not null auto_increment,
+    client_username varchar(30) not null,
+    question_id     integer     not null,
+    answer          varchar(4000),
+    constraint fk_client_questionnaire_question_id foreign key (question_id) references questionnaire (id),
+    constraint fk_client_questionnaire_clusername foreign key (client_username) references client (username),
+    constraint pk_client_questionnaire_id primary key (id)
+);
+
+drop table if exists client_extra_info;
+create table client_extra_info
+(
+    client_username          varchar(30),
+    questionnaire_initiated boolean,
+    questionnaire_serial     varchar(100),
+    constraint pk_client_extra_info_clusername primary key (client_username),
+    constraint fk_client_extra_info_clusername foreign key (client_username) references client (username)
 );
