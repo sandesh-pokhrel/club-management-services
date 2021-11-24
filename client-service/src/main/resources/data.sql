@@ -35,8 +35,8 @@ values ('sandesh4', 'Sandesh', 'Pokhrel', 'M', '1996-07-03', 'sandesh.pokhrel564
 COMMIT;
 
 -- Questionnaire table inserts
-insert into questionnaire (question, input_type, options)
-values ('What is you major intention of joining gym?', 'textarea', null);
+insert into questionnaire (question, input_type, options, enabled)
+values ('What is you major intention of joining gym?', 'textarea', null, true);
 
-insert into questionnaire (question, input_type, options)
-values ('Please rate how much muscle you intend to make?', 'rating', 5);
+insert into questionnaire (question, input_type, options, enabled)
+values ('Please rate how much muscle you intend to make?', 'rating', '1,2,3,4,5', true);
