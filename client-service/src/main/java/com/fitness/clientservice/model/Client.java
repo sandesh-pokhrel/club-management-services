@@ -1,12 +1,14 @@
 package com.fitness.clientservice.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -58,8 +60,12 @@ public class Client extends RepresentationModel<Client> {
     private String address;
     private String city;
     private String province;
-    private String postalCode;
+    private Integer postalCode;
     private Boolean isProspect;
+
+    @OneToMany(mappedBy = "client")
+    @JsonManagedReference
+    private List<ClientNote> notes;
 
     @Override
     public boolean equals(Object o) {

@@ -50,9 +50,23 @@ create table client_questionnaire
 drop table if exists client_extra_info;
 create table client_extra_info
 (
-    client_username          varchar(30),
+    client_username         varchar(30),
     questionnaire_initiated boolean,
-    questionnaire_serial     varchar(100),
+    questionnaire_serial    varchar(100),
     constraint pk_client_extra_info_clusername primary key (client_username),
     constraint fk_client_extra_info_clusername foreign key (client_username) references client (username)
+);
+
+drop table if exists client_trainer_note;
+create table client_trainer_note
+(
+    id               integer not null auto_increment,
+    client_username  varchar(30),
+    trainer_username varchar(30),
+    note             varchar(5000),
+    created_date     date,
+    constraint pk_client_trainer_note_id primary key (id),
+    constraint fk_client_trainer_note_clusername foreign key (client_username) references client (username),
+    constraint fk_client_trainer_note_trusername foreign key (trainer_username)
+        references club_management_auth.auth_user (username)
 );
