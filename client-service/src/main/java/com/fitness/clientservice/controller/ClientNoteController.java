@@ -35,4 +35,10 @@ public class ClientNoteController {
         log.warn(clientNote.getUser().toString());
         return this.clientNoteService.saveNote(clientNote);
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteClientNote(@PathVariable Integer id) {
+        this.clientNoteService.deleteNote(id);
+    }
 }
