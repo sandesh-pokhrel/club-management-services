@@ -17,6 +17,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
+                .antMatchers("/questions/**").permitAll()
+                .antMatchers("/client-extra-info/check-questionnaire-serial/**").permitAll()
                 .anyRequest().authenticated();
     }
 }
