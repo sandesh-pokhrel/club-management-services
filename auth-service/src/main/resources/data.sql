@@ -2,12 +2,13 @@
 -- ACCESS TOKEN VALIDITY = 300 SECOND
 -- REFRESH TOKEN VALIDITY = 1800 SECOND
 -- insert client details [clientId = club_management_front & clientSecret = club_management_front@123321]
+-- resource_ids represet individual resource owners 'club_management_front' is added and autoapprove set to 'true'
 INSERT INTO oauth_client_details
-(client_id, client_secret, scope, authorized_grant_types,
- authorities, access_token_validity, refresh_token_validity)
-VALUES ('club_management_front', '$2a$12$QvOvgximnr/YN3SoE/ckrOWKyNLu3x7M3u4wQ9AzOCUgh3JgKmP4i',
+(client_id, resource_ids, client_secret, scope, authorized_grant_types,
+ authorities, access_token_validity, refresh_token_validity, autoapprove)
+VALUES ('club_management_front', 'club_management_front', '$2a$12$QvOvgximnr/YN3SoE/ckrOWKyNLu3x7M3u4wQ9AzOCUgh3JgKmP4i',
         'read,write', 'password,refresh_token,client_credentials,authorization_code',
-        'TRUSTED_CLUB_MANAGEMENT_CLIENT', 300, 1800);
+        'TRUSTED_CLUB_MANAGEMENT_CLIENT', 300, 1800, 'true');
 
 -- dummy username sandesh and password sandesh
 insert into auth_user values ('sandesh', '$2a$12$K89EqUvfERXAB0/diRrAb.OZdOLI2ZLpR1mTZysCB4qUspYj1e22y',

@@ -1,6 +1,7 @@
 package com.fitness.authservice.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,10 +28,16 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     @Autowired
     private UserDetailsService customUserDetailsService;
 
+    @Value("${security.oauth.token.access}")
+    private String tokenAccessPrivilege;
+
+    @Value("${security.oauth.signing.key}")
+    private String signingKey;
+
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setSigningKey("some_signing_key");
+        converter.setSigningKey(signingKey);
         endpoints
                 .authenticationManager(this.authenticationManager)
                 .tokenStore(tokenStore())
@@ -42,8 +49,11 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     @Override
     public void configure(AuthorizationServerSecurityConfigurer oauthServer) {
         oauthServer
-                .tokenKeyAccess("hasAuthority('TRUSTED_CLUB_MANAGEMENT_CLIENT')")
-                .checkTokenAccess("hasAuthority('TRUSTED_CLUB_MANAGEMENT_CLIENT')");
+                .tokenKeyAccess("permitAll")
+                .checkTokenAccess("permitAll")
+                //.tokenKeyAccess("hasAuthority('"+tokenAccessPrivilege+"')")
+                //.checkTokenAccess("hasAuthority('"+tokenAccessPrivilege+"')")
+                .passwordEncoder(passwordEncoder());
     }
 
     @Override
