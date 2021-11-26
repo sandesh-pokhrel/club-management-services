@@ -70,3 +70,7 @@ create table client_trainer_note
     constraint fk_client_trainer_note_trusername foreign key (trainer_username)
         references club_management_auth.auth_user (username)
 );
+
+drop view if exists user;
+create view user
+as select username from club_management_auth.auth_user;
