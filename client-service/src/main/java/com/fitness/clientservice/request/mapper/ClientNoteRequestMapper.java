@@ -17,8 +17,8 @@ public interface ClientNoteRequestMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "client",
             expression = "java(clientService.getClientByUsername(clientNoteRequest.getClientUsername()))")
-    @Mapping(target = "user",
-        expression = "java(authFeignClient.getData(clientNoteRequest.getTrainerUsername()))")
+    @Mapping(target = "trainerUsername",
+        expression = "java(authFeignClient.getData(clientNoteRequest.getTrainerUsername()).getUsername())")
     @Mapping(target = "createdDate", expression = "java(getDate())")
     ClientNote from(ClientNoteRequest clientNoteRequest, ClientService clientService,
                     AuthFeignClient authFeignClient);

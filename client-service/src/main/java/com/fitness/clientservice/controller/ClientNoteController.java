@@ -29,10 +29,8 @@ public class ClientNoteController {
     @ResponseStatus(HttpStatus.CREATED)
     public ClientNote saveClientNote(@RequestBody ClientNoteRequest clientNoteRequest) {
         ClientNote clientNote = this.clientNoteRequestMapper.from(clientNoteRequest, clientService, authFeignClient);
-        if (Objects.isNull(clientNote.getClient()) || Objects.isNull(clientNote.getUser()))
+        if (Objects.isNull(clientNote.getClient()) || Objects.isNull(clientNote.getTrainerUsername()))
             throw new NotFoundException("Client or Trainer not found for the given request");
-        log.warn(clientNote.getClient().toString());
-        log.warn(clientNote.getUser().toString());
         return this.clientNoteService.saveNote(clientNote);
     }
 

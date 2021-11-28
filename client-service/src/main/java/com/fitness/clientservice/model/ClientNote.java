@@ -22,6 +22,7 @@ public class ClientNote {
     private Integer id;
     private String note;
     private Date createdDate;
+    private String trainerUsername;
 
     @ManyToOne
     @JoinColumn(name = "client_username", referencedColumnName = "username",
@@ -29,8 +30,7 @@ public class ClientNote {
     @JsonBackReference
     private Client client;
 
-    @Transient
-    private User user;
+
 
     @Override
     public boolean equals(Object o) {
