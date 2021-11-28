@@ -1,8 +1,8 @@
 package com.fitness.clientservice.controller;
 
 import com.fitness.clientservice.exception.NotFoundException;
+import com.fitness.clientservice.feign.AuthFeignClient;
 import com.fitness.clientservice.model.ClientNote;
-import com.fitness.clientservice.repository.UserRepository;
 import com.fitness.clientservice.request.ClientNoteRequest;
 import com.fitness.clientservice.request.mapper.ClientNoteRequestMapper;
 import com.fitness.clientservice.service.ClientNoteService;
@@ -22,13 +22,13 @@ public class ClientNoteController {
 
     private final ClientNoteService clientNoteService;
     private final ClientService clientService;
-    private final UserRepository userRepository;
+    private final AuthFeignClient authFeignClient;
     private final ClientNoteRequestMapper clientNoteRequestMapper;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ClientNote saveClientNote(@RequestBody ClientNoteRequest clientNoteRequest) {
-        ClientNote clientNote = this.clientNoteRequestMapper.from(clientNoteRequest, clientService, userRepository);
+        ClientNote clientNote = this.clientNoteRequestMapper.from(clientNoteRequest, clientService, authFeignClient);
         if (Objects.isNull(clientNote.getClient()) || Objects.isNull(clientNote.getUser()))
             throw new NotFoundException("Client or Trainer not found for the given request");
         log.warn(clientNote.getClient().toString());

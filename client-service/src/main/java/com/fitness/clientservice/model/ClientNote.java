@@ -29,9 +29,7 @@ public class ClientNote {
     @JsonBackReference
     private Client client;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "trainer_username", referencedColumnName = "username",
-            foreignKey = @ForeignKey(name = "fk_client_trainer_note_trusername"))
+    @Transient
     private User user;
 
     @Override

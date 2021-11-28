@@ -32,6 +32,10 @@ public class UserService implements UserDetailsService {
         return this.userRepository.save(user);
     }
 
+    public User getByUsername(String username) {
+        return this.userRepository.findById(username).orElse(null);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> optionalUser = this.userRepository.findById(username);

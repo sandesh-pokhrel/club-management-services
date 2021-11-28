@@ -18,4 +18,10 @@ public class UserController {
     public User register(@RequestBody User user) {
         return this.userService.saveUser(user);
     }
+
+    @GetMapping("/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public User getUserByUsername(@PathVariable String username) {
+        return this.userService.getByUsername(username);
+    }
 }
