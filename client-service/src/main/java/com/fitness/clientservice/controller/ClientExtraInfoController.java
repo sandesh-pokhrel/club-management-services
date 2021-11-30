@@ -1,13 +1,13 @@
 package com.fitness.clientservice.controller;
 
-import com.fitness.clientservice.common.MailType;
-import com.fitness.clientservice.exception.NotFoundException;
 import com.fitness.clientservice.model.Client;
 import com.fitness.clientservice.model.ClientExtraInfo;
 import com.fitness.clientservice.service.ClientExtraInfoService;
 import com.fitness.clientservice.service.ClientService;
-import com.fitness.clientservice.util.GeneralUtil;
-import com.fitness.clientservice.util.MailUtil;
+import com.fitness.sharedapp.common.MailType;
+import com.fitness.sharedapp.exception.NotFoundException;
+import com.fitness.sharedapp.util.GeneralUtil;
+import com.fitness.sharedapp.util.MailUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

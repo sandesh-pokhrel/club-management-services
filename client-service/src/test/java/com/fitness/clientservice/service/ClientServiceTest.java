@@ -1,6 +1,5 @@
 package com.fitness.clientservice.service;
 
-import com.fitness.clientservice.feign.AuthFeignClient;
 import com.fitness.clientservice.model.Client;
 import com.fitness.clientservice.repository.ClientRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,12 +22,10 @@ class ClientServiceTest {
 
     @Mock
     private ClientRepository clientRepository;
-    @Mock
-    private AuthFeignClient authFeignClient;
 
     @BeforeEach
     void setup() {
-        clientService = new ClientService(clientRepository, authFeignClient);
+        clientService = new ClientService(clientRepository);
     }
 
     @Test

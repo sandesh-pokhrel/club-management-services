@@ -1,4 +1,4 @@
-package com.fitness.clientservice.common;
+package com.fitness.sharedapp.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

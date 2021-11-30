@@ -6,8 +6,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/oauth/users")
+@RequestMapping("/users")
 @AllArgsConstructor
 public class UserController {
 
@@ -17,6 +19,12 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public User register(@RequestBody User user) {
         return this.userService.saveUser(user);
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<String> getAllUsers() {
+        return this.userService.getAllUsernames();
     }
 
     @GetMapping("/{username}")

@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @FeignClient(value = "auth-service", name = "auth-service")
 public interface AuthFeignClient {
 
-    @RequestMapping(method= RequestMethod.GET, value="/oauth/users/{username}")
+    @RequestMapping(method= RequestMethod.GET, value="/users/{username}")
     User getData(@PathVariable String username);
 }

@@ -1,6 +1,6 @@
-package com.fitness.clientservice.exception;
+package com.fitness.sharedapp.exception;
 
-import com.fitness.clientservice.common.Status;
+import com.fitness.sharedapp.common.Status;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.dao.DataIntegrityViolationException;

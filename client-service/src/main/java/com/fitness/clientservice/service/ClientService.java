@@ -1,12 +1,10 @@
 package com.fitness.clientservice.service;
 
-import com.fitness.clientservice.common.Constants;
-import com.fitness.clientservice.exception.AlreadyExistsException;
-import com.fitness.clientservice.exception.NotFoundException;
-import com.fitness.clientservice.feign.AuthFeignClient;
 import com.fitness.clientservice.model.Client;
-import com.fitness.clientservice.model.User;
 import com.fitness.clientservice.repository.ClientRepository;
+import com.fitness.sharedapp.common.Constants;
+import com.fitness.sharedapp.exception.AlreadyExistsException;
+import com.fitness.sharedapp.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -22,7 +21,6 @@ import java.util.Objects;
 public class ClientService extends GenericService {
 
     private final ClientRepository clientRepository;
-    private final AuthFeignClient authFeignClient;
 
     public Page<Client> getAllClients(Map<String, String> paramMap) {
         Integer page = getPageNumber(paramMap);
@@ -36,13 +34,12 @@ public class ClientService extends GenericService {
         return this.clientRepository.findAll(pageable);
     }
 
-    public Client getClientByUsername(String username) {
+    public List<String> getAllClientUsernames() {
+        return this.clientRepository.getAllClientUsernames();
+    }
 
-        Client client = this.clientRepository.findById(username).orElse(null);
-        client.getNotes().forEach(clientNote -> {
-            User user = authFeignClient.getData(username);
-        });
-        return client;
+    public Client getClientByUsername(String username) {
+        return this.clientRepository.findById(username).orElse(null);
     }
 
     public Client saveClient(Client client) {

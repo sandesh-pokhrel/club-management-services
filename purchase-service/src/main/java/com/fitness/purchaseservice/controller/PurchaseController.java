@@ -1,7 +1,7 @@
 package com.fitness.purchaseservice.controller;
 
-import com.fitness.purchaseservice.model.Purchase;
-import com.fitness.purchaseservice.service.PurchaseService;
+import com.fitness.purchaseservice.model.PurchaseCategory;
+import com.fitness.purchaseservice.service.PurchaseCategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,10 +14,10 @@ import java.util.List;
 @AllArgsConstructor
 public class PurchaseController {
 
-    private final PurchaseService purchaseService;
+    private final PurchaseCategoryService purchaseCategoryService;
 
     @GetMapping
-    public List<Purchase> getAllPurchases() {
-        return this.purchaseService.getAllPurchases();
+    public List<PurchaseCategory> getAllPurchases() {
+        return this.purchaseCategoryService.getAllPurchases();
     }
 }

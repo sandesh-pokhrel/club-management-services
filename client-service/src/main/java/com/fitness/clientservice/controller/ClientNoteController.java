@@ -1,12 +1,12 @@
 package com.fitness.clientservice.controller;
 
-import com.fitness.clientservice.exception.NotFoundException;
 import com.fitness.clientservice.feign.AuthFeignClient;
 import com.fitness.clientservice.model.ClientNote;
 import com.fitness.clientservice.request.ClientNoteRequest;
 import com.fitness.clientservice.request.mapper.ClientNoteRequestMapper;
 import com.fitness.clientservice.service.ClientNoteService;
 import com.fitness.clientservice.service.ClientService;
+import com.fitness.sharedapp.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

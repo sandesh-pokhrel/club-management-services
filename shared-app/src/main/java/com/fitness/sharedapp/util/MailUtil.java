@@ -1,7 +1,7 @@
-package com.fitness.clientservice.util;
+package com.fitness.sharedapp.util;
 
-import com.fitness.clientservice.common.MailProperties;
-import com.fitness.clientservice.common.MailType;
+import com.fitness.sharedapp.common.MailProperties;
+import com.fitness.sharedapp.common.MailType;
 import lombok.AllArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;

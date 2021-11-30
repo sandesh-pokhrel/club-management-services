@@ -32,6 +32,14 @@ public class UserService implements UserDetailsService {
         return this.userRepository.save(user);
     }
 
+    public List<String> getAllUsernames() {
+        return this.userRepository.getOnlyUsernames();
+    }
+
+    public List<User> getAllUsers() {
+        return this.userRepository.findAll();
+    }
+
     public User getByUsername(String username) {
         return this.userRepository.findById(username).orElse(null);
     }

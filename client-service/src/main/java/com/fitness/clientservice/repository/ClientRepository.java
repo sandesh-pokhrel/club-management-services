@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 public interface ClientRepository extends JpaRepository<Client, String> {
@@ -16,6 +18,10 @@ public interface ClientRepository extends JpaRepository<Client, String> {
 
     boolean existsByCellPhone(String cellPhone);
     boolean existsByCellPhoneAndUsernameNot(String cellPhone, String username);
+
+    @Query("select concat(concat(concat(concat(concat(c.firstName, ' '), c.lastName), '  ('), c.username), ')')  " +
+            "from Client c order by c.firstName, c.lastName")
+    List<String> getAllClientUsernames();
 
     @Query("SELECT c FROM Client c " +
             "WHERE lower(c.username) like %:searchText% OR lower(c.firstName) like %:searchText% OR " +

@@ -1,4 +1,4 @@
-package com.fitness.clientservice.util;
+package com.fitness.sharedapp.util;
 
 import org.springframework.stereotype.Component;
 

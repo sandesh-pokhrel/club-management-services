@@ -1,4 +1,4 @@
-package com.fitness.clientservice.config;
+package com.fitness.purchaseservice.config;
 
 import com.fitness.sharedapp.common.Status;
 import org.springframework.context.annotation.Bean;

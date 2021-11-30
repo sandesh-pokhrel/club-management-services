@@ -11,7 +11,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @EnableFeignClients
 @EnableEurekaClient
 @EnableResourceServer
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.fitness.clientservice", "com.fitness.sharedapp"})
 public class ClientServiceApplication {
 
     public static void main(String[] args) {

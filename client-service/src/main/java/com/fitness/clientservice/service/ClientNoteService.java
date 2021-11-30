@@ -1,8 +1,8 @@
 package com.fitness.clientservice.service;
 
-import com.fitness.clientservice.exception.NotFoundException;
 import com.fitness.clientservice.model.ClientNote;
 import com.fitness.clientservice.repository.ClientNoteRepository;
+import com.fitness.sharedapp.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
