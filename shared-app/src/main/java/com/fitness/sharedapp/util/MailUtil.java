@@ -18,9 +18,6 @@ public class MailUtil {
     private final MailProperties mailProperties;
 
     private MimeMessage getMessageFormat(String toEmail, MailType mailType, String serial) throws MessagingException {
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        message.setFrom(mailProperties.getUsername());
-//        message.setTo(toEmail);
         String buttonClass = "background-color: #EEEEEE;" +
                 "border: 1px solid black;" +
                 "color: green;" +
