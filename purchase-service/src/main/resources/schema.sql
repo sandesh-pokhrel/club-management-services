@@ -43,3 +43,17 @@ create table client_purchase
         references purchase_sub_category (sub_category_id),
     constraint pk_client_purchase_id primary key (id)
 );
+
+drop table if exists schedule;
+create table schedule
+(
+    id               integer      not null auto_increment,
+    trainer_username varchar(30)  not null,
+    client_username  varchar(30)  not null,
+    subject          varchar(500) not null,
+    start_time       datetime     not null,
+    end_time         datetime     not null,
+    constraint pk_schedule_id primary key (id),
+    constraint fk_schedule_trainer_username foreign key (trainer_username) references club_management_auth.auth_user (username),
+    constraint fk_schedule_client_username foreign key (client_username) references club_management_clients.client (username)
+);
