@@ -23,8 +23,8 @@ public class ScheduleController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Schedule saveSchedule(@RequestBody Schedule schedule) {
-        return this.scheduleService.saveSchedule(schedule);
+    public Schedule saveSchedule(@RequestBody Schedule schedule, @RequestParam String mode) {
+        return this.scheduleService.saveSchedule(schedule, mode);
     }
 
     @DeleteMapping("/{id}")

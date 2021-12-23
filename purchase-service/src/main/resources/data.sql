@@ -23,3 +23,7 @@ insert into purchase_sub_category (category_id, sub_category_name, base_rate, am
 insert into purchase_sub_category (category_id, sub_category_name, base_rate, amount, payment_interval, commission,
                                    appts, pays_on_completion) values (2, 'Annual Consultation', 25, 890, 'Weekly', 8,
                                                                       20, true);
+
+
+insert into schedule (trainer_username, client_username, subject, start_time, end_time)
+    values ('sandesh', 'dude_don', 'sandesh providing training to dude_don', '2021-12-17 06:00:00', '2021-12-17 06:30:00');

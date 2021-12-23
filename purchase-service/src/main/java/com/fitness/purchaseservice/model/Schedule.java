@@ -29,4 +29,11 @@ public class Schedule {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private Date endTime;
+
+    private String status;
+    private Boolean isReadOnly;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "sub_category_id", referencedColumnName = "sub_category_id")
+    private PurchaseSubCategory purchaseSubCategory;
 }

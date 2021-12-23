@@ -30,6 +30,7 @@ public class ClientPurchase {
     private Double initialDownpayment;
     private Integer noOfPostdates;
     private Date firstPostdate;
+    private Integer apptScheduled;
 
     @OneToOne
     @JoinColumn(name = "sub_category_id", referencedColumnName = "sub_category_id",

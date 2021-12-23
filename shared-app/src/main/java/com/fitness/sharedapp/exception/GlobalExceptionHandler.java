@@ -32,6 +32,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(status);
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<Status> handleBadRequestException(BadRequestException ex) {
+        status.setExMessage(ex.getMessage());
+        return ResponseEntity.badRequest().body(status);
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Status> dataIntegrityViolationException(DataIntegrityViolationException ex) {
