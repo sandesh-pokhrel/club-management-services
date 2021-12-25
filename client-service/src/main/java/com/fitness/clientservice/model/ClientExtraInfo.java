@@ -17,6 +17,6 @@ import javax.persistence.Table;
 public class ClientExtraInfo {
     @Id
     private String clientUsername;
-    private boolean questionnaireInitiated;
+    private Boolean questionnaireInitiated;
     private String questionnaireSerial;
 }

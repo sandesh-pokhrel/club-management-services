@@ -24,7 +24,15 @@ public class QuestionnaireService extends GenericService{
         return this.questionnaireRepository.findAllByEnabled(true);
     }
 
-    public List<ClientQuestionnaire> saveAllClientQuestionnaire(List<ClientQuestionnaire> clientQuestionnaires) {
-        return this.clientQuestionnaireRepository.saveAllAndFlush(clientQuestionnaires);
+    public Questionnaire getQuestionsById(Integer id) {
+        return this.questionnaireRepository.findById(id).orElse(null);
+    }
+
+    public void saveAllClientQuestionnaire(List<ClientQuestionnaire> clientQuestionnaires) {
+        this.clientQuestionnaireRepository.saveAllAndFlush(clientQuestionnaires);
+    }
+
+    public List<ClientQuestionnaire> getAllClientAnsers(String clientUsername) {
+        return this.clientQuestionnaireRepository.findAllByClientUsername(clientUsername);
     }
 }
