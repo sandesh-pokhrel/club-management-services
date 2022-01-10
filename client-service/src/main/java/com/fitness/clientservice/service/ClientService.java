@@ -5,6 +5,7 @@ import com.fitness.clientservice.repository.ClientRepository;
 import com.fitness.sharedapp.common.Constants;
 import com.fitness.sharedapp.exception.AlreadyExistsException;
 import com.fitness.sharedapp.exception.NotFoundException;
+import com.fitness.sharedapp.service.GenericService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

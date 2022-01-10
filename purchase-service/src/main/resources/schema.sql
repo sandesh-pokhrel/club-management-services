@@ -37,7 +37,8 @@ create table client_purchase
     initial_downpayment double,
     no_of_postdates     integer,
     first_postdate      date,
-    appt_scheduled integer default 0,
+    appt_scheduled      integer default 0,
+    purchase_date       date,
     constraint fk_client_purchase_clusername foreign key (client_username)
         references club_management_clients.client (username),
     constraint fk_client_purchase_subcatid foreign key (sub_category_id)
@@ -54,9 +55,9 @@ create table schedule
     subject          varchar(500) not null,
     start_time       datetime     not null,
     end_time         datetime     not null,
-    status varchar(50) default 'CREATED',
-    is_read_only boolean DEFAULT FALSE,
-    sub_category_id integer,
+    status           varchar(50) default 'CREATED',
+    is_read_only     boolean     DEFAULT FALSE,
+    sub_category_id  integer,
     constraint pk_schedule_id primary key (id),
     constraint fk_schedule_trainer_username foreign key (trainer_username) references club_management_auth.auth_user (username),
     constraint fk_schedule_client_username foreign key (client_username) references club_management_clients.client (username),

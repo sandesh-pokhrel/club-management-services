@@ -1,4 +1,4 @@
-package com.fitness.clientservice.service;
+package com.fitness.sharedapp.service;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.util.Strings;
