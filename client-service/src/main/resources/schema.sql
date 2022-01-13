@@ -71,6 +71,49 @@ create table client_trainer_note
         references club_management_auth.auth_user (username)
 );
 
+drop table if exists client_assessment;
+create table client_assessment
+(
+    id                           integer not null auto_increment,
+    client_username              varchar(50),
+    trainer_username             varchar(50),
+    assessment_date              date,
+    age                          integer,
+    weight_pounds                double,
+    height_feet                  double,
+    height_inches                double,
+    systolic_blood_pressure      double,
+    diastolic_blood_pressure     double,
+    pre_exercise_heart_rate      double,
+    percent_body_fat             double,
+    pushups                      integer,
+    plank                        integer,
+    grip_strength_left           double,
+    grip_strength_right          double,
+    straight_leg_raise_left      double,
+    straight_leg_raise_right     double,
+    shoulder_mobility_left       double,
+    shoulder_mobility_right      double,
+    deep_squat                   integer,
+    hurdle_step_left             double,
+    hurdle_step_right            double,
+    trunk_stability_pushups      integer,
+    inline_lunge_left            double,
+    inline_lunge_right           double,
+    rotatory_stability_left      double,
+    rotatory_stability_right     double,
+    unipedal_stance_open_left    double,
+    unipedal_stance_open_right   double,
+    unipedal_stance_closed_left  double,
+    unipedal_stance_closed_right double,
+    constraint pk_client_trainer_note_id primary key (id),
+    constraint fk_client_assessment_clusername foreign key (client_username) references client (username),
+    constraint fk_client_assessment_trusername foreign key (trainer_username)
+        references club_management_auth.auth_user (username)
+);
+
 drop view if exists user;
 create view user
-as select username from club_management_auth.auth_user;
+as
+select username
+from club_management_auth.auth_user;
