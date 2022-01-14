@@ -1,12 +1,12 @@
 package com.fitness.clientservice.controller;
 
-import com.fitness.clientservice.exception.NotFoundException;
+import com.fitness.clientservice.feign.AuthFeignClient;
 import com.fitness.clientservice.model.ClientNote;
-import com.fitness.clientservice.repository.UserRepository;
 import com.fitness.clientservice.request.ClientNoteRequest;
 import com.fitness.clientservice.request.mapper.ClientNoteRequestMapper;
 import com.fitness.clientservice.service.ClientNoteService;
 import com.fitness.clientservice.service.ClientService;
+import com.fitness.sharedapp.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,17 +22,15 @@ public class ClientNoteController {
 
     private final ClientNoteService clientNoteService;
     private final ClientService clientService;
-    private final UserRepository userRepository;
+    private final AuthFeignClient authFeignClient;
     private final ClientNoteRequestMapper clientNoteRequestMapper;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ClientNote saveClientNote(@RequestBody ClientNoteRequest clientNoteRequest) {
-        ClientNote clientNote = this.clientNoteRequestMapper.from(clientNoteRequest, clientService, userRepository);
-        if (Objects.isNull(clientNote.getClient()) || Objects.isNull(clientNote.getUser()))
+        ClientNote clientNote = this.clientNoteRequestMapper.from(clientNoteRequest, clientService, authFeignClient);
+        if (Objects.isNull(clientNote.getClient()) || Objects.isNull(clientNote.getTrainerUsername()))
             throw new NotFoundException("Client or Trainer not found for the given request");
-        log.warn(clientNote.getClient().toString());
-        log.warn(clientNote.getUser().toString());
         return this.clientNoteService.saveNote(clientNote);
     }
 

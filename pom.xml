@@ -25,6 +25,8 @@
         <module>gateway-service</module>
         <module>client-service</module>
         <module>auth-service</module>
+        <module>purchase-service</module>
+        <module>shared-app</module>
     </modules>
 
     <dependencies>

@@ -22,6 +22,7 @@ public class ClientNote {
     private Integer id;
     private String note;
     private Date createdDate;
+    private String trainerUsername;
 
     @ManyToOne
     @JoinColumn(name = "client_username", referencedColumnName = "username",
@@ -29,10 +30,7 @@ public class ClientNote {
     @JsonBackReference
     private Client client;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "trainer_username", referencedColumnName = "username",
-            foreignKey = @ForeignKey(name = "fk_client_trainer_note_trusername"))
-    private User user;
+
 
     @Override
     public boolean equals(Object o) {

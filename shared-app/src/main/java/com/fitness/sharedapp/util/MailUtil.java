@@ -1,7 +1,7 @@
-package com.fitness.clientservice.util;
+package com.fitness.sharedapp.util;
 
-import com.fitness.clientservice.common.MailProperties;
-import com.fitness.clientservice.common.MailType;
+import com.fitness.sharedapp.common.MailProperties;
+import com.fitness.sharedapp.common.MailType;
 import lombok.AllArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -18,9 +18,6 @@ public class MailUtil {
     private final MailProperties mailProperties;
 
     private MimeMessage getMessageFormat(String toEmail, MailType mailType, String serial) throws MessagingException {
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        message.setFrom(mailProperties.getUsername());
-//        message.setTo(toEmail);
         String buttonClass = "background-color: #EEEEEE;" +
                 "border: 1px solid black;" +
                 "color: green;" +

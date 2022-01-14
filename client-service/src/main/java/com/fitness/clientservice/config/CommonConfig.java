@@ -1,6 +1,6 @@
 package com.fitness.clientservice.config;
 
-import com.fitness.clientservice.common.Status;
+import com.fitness.sharedapp.common.Status;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;

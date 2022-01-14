@@ -1,10 +1,11 @@
 package com.fitness.clientservice.service;
 
-import com.fitness.clientservice.common.Constants;
-import com.fitness.clientservice.exception.AlreadyExistsException;
-import com.fitness.clientservice.exception.NotFoundException;
 import com.fitness.clientservice.model.Client;
 import com.fitness.clientservice.repository.ClientRepository;
+import com.fitness.sharedapp.common.Constants;
+import com.fitness.sharedapp.exception.AlreadyExistsException;
+import com.fitness.sharedapp.exception.NotFoundException;
+import com.fitness.sharedapp.service.GenericService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -31,6 +33,10 @@ public class ClientService extends GenericService {
         if (Objects.nonNull(search))
             return this.clientRepository.search(search, pageable);
         return this.clientRepository.findAll(pageable);
+    }
+
+    public List<String> getAllClientUsernames() {
+        return this.clientRepository.getAllClientUsernames();
     }
 
     public Client getClientByUsername(String username) {

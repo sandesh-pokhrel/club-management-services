@@ -1,9 +1,9 @@
 package com.fitness.clientservice.service;
 
-import com.fitness.clientservice.exception.AlreadyExistsException;
-import com.fitness.clientservice.exception.NotFoundException;
 import com.fitness.clientservice.model.ClientExtraInfo;
 import com.fitness.clientservice.repository.ClientExtraInfoRepository;
+import com.fitness.sharedapp.exception.AlreadyExistsException;
+import com.fitness.sharedapp.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

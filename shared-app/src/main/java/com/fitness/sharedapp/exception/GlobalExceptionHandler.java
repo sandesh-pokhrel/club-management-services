@@ -1,6 +1,6 @@
-package com.fitness.clientservice.exception;
+package com.fitness.sharedapp.exception;
 
-import com.fitness.clientservice.common.Status;
+import com.fitness.sharedapp.common.Status;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -28,6 +28,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AlreadyExistsException.class)
     public ResponseEntity<Status> handleAlreadyExistsException(AlreadyExistsException ex) {
+        status.setExMessage(ex.getMessage());
+        return ResponseEntity.badRequest().body(status);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<Status> handleBadRequestException(BadRequestException ex) {
         status.setExMessage(ex.getMessage());
         return ResponseEntity.badRequest().body(status);
     }

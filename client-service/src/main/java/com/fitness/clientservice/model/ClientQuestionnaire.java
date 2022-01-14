@@ -18,6 +18,9 @@ public class ClientQuestionnaire {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String answer;
-    private Integer questionId;
     private String clientUsername;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "QUESTION_ID", referencedColumnName = "ID")
+    private Questionnaire questionnaire;
 }

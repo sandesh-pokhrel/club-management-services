@@ -1,4 +1,4 @@
-package com.fitness.clientservice.exception;
+package com.fitness.sharedapp.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

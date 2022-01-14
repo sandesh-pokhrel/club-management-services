@@ -67,6 +67,10 @@ public class Client extends RepresentationModel<Client> {
     @JsonManagedReference
     private List<ClientNote> notes;
 
+    @OneToMany(mappedBy = "client")
+    @JsonManagedReference
+    private List<ClientAssessment> clientAssessments;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

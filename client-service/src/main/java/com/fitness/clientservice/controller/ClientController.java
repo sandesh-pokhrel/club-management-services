@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Map;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -37,6 +38,12 @@ public class ClientController {
         clientsPage.getContent().forEach(client -> client.add(linkTo(methodOn(ClientController.class)
                 .getClientByUsername(client.getUsername())).withSelfRel()));
         return ResponseEntity.ok(clientsPage);
+    }
+
+    @GetMapping("/usernames")
+    @ResponseStatus(HttpStatus.OK)
+    public List<String> getAllClientUsernames() {
+        return this.clientService.getAllClientUsernames();
     }
 
     @GetMapping("/{username}")
