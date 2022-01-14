@@ -15,11 +15,15 @@ public class ClientAssessmentController {
 
     private final ClientAssessmentService clientAssessmentService;
 
-
-    @GetMapping("/{username}")
-    public List<ClientAssessment> getAssessmentsForClient(@PathVariable String username) {
-        return this.clientAssessmentService.getAllAssessmentsForClient(username);
+    @GetMapping("/{id}")
+    public ClientAssessment getAssessmentById(@PathVariable Integer id) {
+        return this.clientAssessmentService.getAssessmentById(id);
     }
+
+//    @GetMapping("/{username}")
+//    public List<ClientAssessment> getAssessmentsForClient(@PathVariable String username) {
+//        return this.clientAssessmentService.getAllAssessmentsForClient(username);
+//    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

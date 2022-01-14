@@ -18,6 +18,10 @@ public class ClientAssessmentService {
     private final ClientAssessmentRepository clientAssessmentRepository;
     private final ClientService clientService;
 
+    public ClientAssessment getAssessmentById(Integer id) {
+        return this.clientAssessmentRepository.findById(id).orElse(null);
+    }
+
     public List<ClientAssessment> getAllAssessmentsForClient(String username) {
         Client client = this.clientService.getClientByUsername(username);
         if (Objects.isNull(client)) throw new NotFoundException("Client not found");
