@@ -39,6 +39,10 @@ public class ClientService extends GenericService {
         return this.clientRepository.getAllClientUsernames();
     }
 
+    public String getClientUsernameConcatFullNameByUsername(String username) {
+        return this.clientRepository.getClientUsernameConcatFullNameByUsername(username);
+    }
+
     public Client getClientByUsername(String username) {
         return this.clientRepository.findById(username).orElse(null);
     }

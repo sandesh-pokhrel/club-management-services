@@ -29,10 +29,12 @@ public class ClientPurchase {
     private Double paymentAmount;
     private Double initialDownpayment;
     private Integer noOfPostdates;
+    private String paymentInterval;
     private Date firstPostdate;
     private Integer apptScheduled;
     private Date purchaseDate;
-
+    private String paymentMethod;
+    private String paymentMethodRefNo;
     @OneToOne
     @JoinColumn(name = "sub_category_id", referencedColumnName = "sub_category_id",
         foreignKey = @ForeignKey(name = "fk_client_purchase_subcatid"))

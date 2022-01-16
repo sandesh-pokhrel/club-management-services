@@ -46,6 +46,12 @@ public class ClientController {
         return this.clientService.getAllClientUsernames();
     }
 
+    @GetMapping("/username-concat-fullname/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public String getClientUsernameConcatFullNameByUsername(@PathVariable String username) {
+        return this.clientService.getClientUsernameConcatFullNameByUsername(username);
+    }
+
     @GetMapping("/{username}")
     @ResponseStatus(value = HttpStatus.OK)
     @ApiOperation(value = "Fetches the client by username")

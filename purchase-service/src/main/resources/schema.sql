@@ -39,6 +39,9 @@ create table client_purchase
     first_postdate      date,
     appt_scheduled      integer default 0,
     purchase_date       date,
+    payment_interval    varchar(50),
+    payment_method varchar(50),
+    payment_method_ref_no varchar(50),
     constraint fk_client_purchase_clusername foreign key (client_username)
         references club_management_clients.client (username),
     constraint fk_client_purchase_subcatid foreign key (sub_category_id)
