@@ -4,6 +4,7 @@ import com.fitness.purchaseservice.model.ClientPurchase;
 import com.fitness.purchaseservice.model.Schedule;
 import com.fitness.purchaseservice.repository.ClientPurchaseRepository;
 import com.fitness.purchaseservice.repository.ScheduleRepository;
+import com.fitness.purchaseservice.util.ScheduleRecurrenceUtil;
 import com.fitness.sharedapp.exception.BadRequestException;
 import com.fitness.sharedapp.exception.NotFoundException;
 import lombok.AllArgsConstructor;
@@ -18,22 +19,24 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final ClientPurchaseRepository clientPurchaseRepository;
+    private final ScheduleRecurrenceUtil scheduleRecurrenceUtil;
 
     public List<Schedule> getAllSchedules() {
         return this.scheduleRepository.findAll();
     }
 
-    public Schedule saveSchedule(Schedule schedule, String mode) {
+    public Schedule saveSchedule(Schedule schedule, String mode, boolean isRecurrent) {
         if (mode.equalsIgnoreCase("EDIT"))
             schedule.setPurchaseSubCategory(this.scheduleRepository.findById(schedule.getId()).get().getPurchaseSubCategory());
-        Long appointmentsScheduledTimes = this.scheduleRepository
-                .countByClientUsernameAndPurchaseSubCategory(schedule.getClientUsername(), schedule.getPurchaseSubCategory());
         ClientPurchase clientPurchase = this.clientPurchaseRepository
                 .findByClientUsernameAndPurchaseSubCategoryAndApptScheduledNot(schedule.getClientUsername(), schedule.getPurchaseSubCategory(), -1);
         if (mode.equalsIgnoreCase("CREATE")) {
-            if (Objects.isNull(clientPurchase)) throw new NotFoundException("No active purchase found!");
-            if (appointmentsScheduledTimes >= clientPurchase.getAppts())
-                throw new BadRequestException("Max (" + clientPurchase.getAppts() + ") number of appointment exceeded!");
+            if (!isRecurrent) {
+                if (Objects.isNull(clientPurchase)) throw new NotFoundException("No active purchase found!");
+                Long appointmentsScheduledTimes = this.scheduleRecurrenceUtil.getScheduledAppointments(schedule);
+                if (appointmentsScheduledTimes >= clientPurchase.getAppts())
+                    throw new BadRequestException("Max (" + clientPurchase.getAppts() + ") number of appointment exceeded!");
+            }
         } else {
             schedule.setIsReadOnly(schedule.getStatus().equalsIgnoreCase("completed"));
             if (schedule.getStatus().equalsIgnoreCase("completed")) {
