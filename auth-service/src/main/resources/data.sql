@@ -12,7 +12,7 @@ VALUES ('club_management_front', 'club_management_front', '$2a$12$QvOvgximnr/YN3
 
 -- dummy username sandesh and password sandesh
 insert into auth_user values ('sandesh', '$2a$12$K89EqUvfERXAB0/diRrAb.OZdOLI2ZLpR1mTZysCB4qUspYj1e22y',
-                              'sandesh.pokhrel56@gmail.com', '9842100964');
+                              'sandesh.pokhrel56@gmail.com', '9842100964','Sandesh', 'Pokhrel', 1, 100, 500);
 insert into auth_role (name, description) values ('ROLE_USER', 'Simple User - Has basic privileges');
 insert into auth_role (name, description) values ('ROLE_ADMIN', 'Admin User - Has permission to perform admin tasks');
 insert into user_role (username, role_id) values ('sandesh', 1);

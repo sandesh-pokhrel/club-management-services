@@ -3,10 +3,12 @@ package com.fitness.authservice.controller;
 import com.fitness.authservice.model.User;
 import com.fitness.authservice.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -23,7 +25,13 @@ public class UserController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<String> getAllUsers() {
+    public Page<User> getAllUsers(@RequestParam Map<String, String> paramMap) {
+        return this.userService.getAllUsers(paramMap);
+    }
+
+    @GetMapping("/usernames")
+    @ResponseStatus(HttpStatus.OK)
+    public List<String> getAllUsernames() {
         return this.userService.getAllUsernames();
     }
 

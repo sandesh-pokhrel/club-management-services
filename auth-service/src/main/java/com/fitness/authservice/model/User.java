@@ -20,9 +20,14 @@ public class User {
 
     @Id
     private String username;
+    private String firstName;
+    private String lastName;
     private String password;
     private String email;
     private String cellPhone;
+    private String level;
+    private Double customRate;
+    private Double groupCustomRate;
 
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "users")
     @JsonManagedReference
