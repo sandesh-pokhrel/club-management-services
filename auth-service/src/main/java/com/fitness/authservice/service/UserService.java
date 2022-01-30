@@ -4,6 +4,8 @@ import com.fitness.authservice.model.User;
 import com.fitness.authservice.repository.RoleRepository;
 import com.fitness.authservice.repository.UserRepository;
 import com.fitness.sharedapp.common.Constants;
+import com.fitness.sharedapp.exception.NotFoundException;
+import com.fitness.sharedapp.service.GenericService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +17,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.fitness.sharedapp.service.GenericService;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,11 +29,15 @@ public class UserService extends GenericService implements UserDetailsService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public User saveUser(User user) {
-        if (userRepository.existsByUsernameOrEmail(user.getUsername(), user.getEmail()))
+    public User saveUser(User user, String mode) {
+        if (mode.equals("CREATE") && userRepository.existsByUsernameOrEmail(user.getUsername(), user.getEmail()))
             throw new RuntimeException("Username or Email already exists!");
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(Collections.singletonList(roleRepository.findByNameContaining("USER")));
+        if (mode.equals("CREATE")) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setRoles(Collections.singletonList(roleRepository.findByNameContaining("USER")));
+        } else
+            this.userRepository
+                    .findById(user.getUsername()).orElseThrow(() -> new NotFoundException("Username not found"));
         return this.userRepository.save(user);
     }
 

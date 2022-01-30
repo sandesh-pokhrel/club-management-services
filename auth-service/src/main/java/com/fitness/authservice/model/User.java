@@ -1,6 +1,8 @@
 package com.fitness.authservice.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,5 +33,6 @@ public class User {
 
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "users")
     @JsonManagedReference
+    @JsonIgnore
     private List<Role> roles;
 }

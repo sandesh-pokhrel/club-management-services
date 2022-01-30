@@ -19,8 +19,8 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User register(@RequestBody User user) {
-        return this.userService.saveUser(user);
+    public User register(@RequestBody User user, @RequestParam String mode) {
+        return this.userService.saveUser(user, mode);
     }
 
     @GetMapping
