@@ -15,8 +15,12 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
 
     Long countByClientUsernameAndPurchaseSubCategoryAndRecurrenceRuleIsNull(String username, PurchaseSubCategory purchaseSubCategory);
 
-    List<Schedule> findAllByClientUsernameAndPurchaseSubCategoryAndRecurrenceRuleIsNotNull(String username, PurchaseSubCategory purchaseSubCategory);
+    List<Schedule> findAllByClientUsernameAndPurchaseSubCategoryAndRecurrenceRuleIsNotNullAndRecurrenceIdIsNull(String username,
+                                                                                           PurchaseSubCategory purchaseSubCategory);
 
     Long countByClientUsernameAndPurchaseSubCategoryAndStatusIgnoreCase(String username, PurchaseSubCategory purchaseSubCategory, String status);
 
+    List<Schedule> findAllByRecurrenceId(Integer id);
+
+    Optional<Schedule> findByRecurrenceExceptionAndRecurrenceId(String recurrenceException, Integer recurrenceId);
 }

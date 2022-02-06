@@ -1,6 +1,7 @@
 package com.fitness.purchaseservice.controller;
 
 import com.fitness.purchaseservice.model.Schedule;
+import com.fitness.purchaseservice.model.ScheduleEditMode;
 import com.fitness.purchaseservice.service.ScheduleService;
 import com.fitness.purchaseservice.util.ScheduleRecurrenceUtil;
 import lombok.AllArgsConstructor;
@@ -27,22 +28,26 @@ public class ScheduleController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Schedule saveSchedule(@RequestBody Schedule schedule, @RequestParam String mode) {
-//        if (Objects.isNull(schedule.getRecurrenceRule())) {
-//            return Collections.singletonList(this.scheduleService.saveSchedule(schedule, mode));
-//        } else {
-//            List<Schedule> schedules = this.scheduleRecurrenceUtil.parseRecurrenceRule(schedule);
-//            List<Schedule> finalSchedules = new ArrayList<>();
-//            schedules.forEach(sch -> finalSchedules.add(this.scheduleService.saveSchedule(sch, mode)));
-//            return finalSchedules;
-//        }
-//        if (!Objects.isNull(schedule.getRecurrenceRule()))
-//            schedule.setRecurrenceRule(this.scheduleRecurrenceUtil.recurrenceRuleWithCount(schedule));
-//        return this.scheduleService.saveSchedule(schedule, mode);
-        if (Objects.nonNull(schedule.getRecurrenceRule())) {
-            String recurrenceRuleWithCount = this.scheduleRecurrenceUtil.recurrenceRuleWithCount(schedule);
+        if (Objects.nonNull(schedule.getRecurrenceRule()) && Objects.isNull(schedule.getRecurrenceId())) {
+            ScheduleEditMode scheduleEditMode;
+            if (mode.equals("EDIT")) {
+                Schedule scheduleFromDb = this.scheduleService.getScheduleById(schedule.getId());
+                if (Objects.nonNull(scheduleFromDb.getRecurrenceRule()))
+                    scheduleEditMode = ScheduleEditMode.SERIES_TO_SERIES;
+                else
+                    scheduleEditMode = ScheduleEditMode.SINGLE_TO_SERIES;
+            } else scheduleEditMode = ScheduleEditMode.NORMAL;
+            String recurrenceRuleWithCount = this.scheduleRecurrenceUtil.recurrenceRuleWithCount(schedule, scheduleEditMode);
             schedule.setRecurrenceRule(recurrenceRuleWithCount);
         }
         return this.scheduleService.saveSchedule(schedule, mode, Objects.nonNull(schedule.getRecurrenceRule()));
+    }
+
+    @GetMapping("/recurrence-delete/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void saveRecurrenceExceptionForDelete(@PathVariable Integer id,
+                                                 @RequestParam("recurrence-exception") String recurrenceException) {
+        this.scheduleService.saveRecurrenceExceptionForDelete(id, recurrenceException);
     }
 
     @DeleteMapping("/{id}")

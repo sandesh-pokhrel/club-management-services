@@ -62,8 +62,13 @@ create table schedule
     is_read_only     boolean     DEFAULT FALSE,
     sub_category_id  integer,
     series_identifier varchar(50),
+    recurrence_rule varchar(500),
+    recurrence_exception varchar(500),
+    deleted_count integer default 0,
+    recurrence_id integer,
     constraint pk_schedule_id primary key (id),
     constraint fk_schedule_trainer_username foreign key (trainer_username) references club_management_auth.auth_user (username),
     constraint fk_schedule_client_username foreign key (client_username) references club_management_clients.client (username),
-    constraint fk_schedule_subcatid foreign key (sub_category_id) references purchase_sub_category (sub_category_id)
+    constraint fk_schedule_subcatid foreign key (sub_category_id) references purchase_sub_category (sub_category_id),
+    constraint fk_schedule_recurrence_id foreign key (recurrence_id) references schedule(id)
 );

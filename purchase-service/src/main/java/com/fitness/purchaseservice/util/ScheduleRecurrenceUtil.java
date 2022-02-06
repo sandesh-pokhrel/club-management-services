@@ -2,6 +2,7 @@ package com.fitness.purchaseservice.util;
 
 import com.fitness.purchaseservice.model.ClientPurchase;
 import com.fitness.purchaseservice.model.Schedule;
+import com.fitness.purchaseservice.model.ScheduleEditMode;
 import com.fitness.purchaseservice.repository.ScheduleRepository;
 import com.fitness.purchaseservice.service.ClientPurchaseService;
 import com.fitness.sharedapp.exception.BadRequestException;
@@ -9,15 +10,20 @@ import com.fitness.sharedapp.exception.NotFoundException;
 import com.fitness.sharedapp.util.GeneralUtil;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 @Component
 @AllArgsConstructor
 public class ScheduleRecurrenceUtil extends GeneralUtil {
+
+    private static final Predicate<Map<String, String>> RULE_EVALUATION =
+            ruleMap -> (Objects.isNull(ruleMap) || !ruleMap.containsKey("count") || !NumberUtils.isCreatable(ruleMap.get("count")));
 
     private final ScheduleRepository scheduleRepository;
     private final ClientPurchaseService clientPurchaseService;
@@ -50,72 +56,49 @@ public class ScheduleRecurrenceUtil extends GeneralUtil {
         return Long.valueOf(clientPurchase.getAppts());
     }
 
-    public Long getScheduledAppointments(Schedule schedule) {
+    public Long getScheduledAppointments(Schedule schedule, ScheduleEditMode scheduleEditMode) {
         Long totalNonSeriesAppts = this.scheduleRepository
                 .countByClientUsernameAndPurchaseSubCategoryAndRecurrenceRuleIsNull(schedule.getClientUsername(), schedule.getPurchaseSubCategory());
         List<Schedule> schedulesWithNonNullRecurrence = this.scheduleRepository
-                .findAllByClientUsernameAndPurchaseSubCategoryAndRecurrenceRuleIsNotNull(schedule.getClientUsername(), schedule.getPurchaseSubCategory());
+                .findAllByClientUsernameAndPurchaseSubCategoryAndRecurrenceRuleIsNotNullAndRecurrenceIdIsNull(schedule.getClientUsername(), schedule.getPurchaseSubCategory());
         Long totalAppts = totalNonSeriesAppts;
         for (Schedule scheduleWithNonNullRecurrence : schedulesWithNonNullRecurrence) {
+            Integer deletedCount = scheduleWithNonNullRecurrence.getDeletedCount();
             String rule = scheduleWithNonNullRecurrence.getRecurrenceRule();
-            totalAppts += getCountFromRule(rule,
-                    ruleMap -> (Objects.isNull(ruleMap) || !ruleMap.containsKey("count") || !NumberUtils.isCreatable(ruleMap.get("count"))));
+            totalAppts += getCountFromRule(rule, ScheduleRecurrenceUtil.RULE_EVALUATION);
+            if (Objects.nonNull(deletedCount) && deletedCount > 0)
+                totalAppts -= deletedCount;
         }
+        if (scheduleEditMode == ScheduleEditMode.SINGLE_TO_SERIES)
+            --totalAppts;
+        else if (scheduleEditMode == ScheduleEditMode.SERIES_TO_SERIES) {
+            Schedule scheduleFromDb = this.scheduleRepository.getById(schedule.getId());
+            Long countFromRule = this.getCountFromRule(scheduleFromDb.getRecurrenceRule(),
+                    ScheduleRecurrenceUtil.RULE_EVALUATION);
+            totalAppts -= countFromRule;
+            totalAppts += Objects.isNull(scheduleFromDb.getDeletedCount()) ? 0 : scheduleFromDb.getDeletedCount();
+        }
+
         return totalAppts;
     }
 
-    public String recurrenceRuleWithCount(Schedule schedule) {
+    public String recurrenceRuleWithCount(Schedule schedule, ScheduleEditMode scheduleEditMode) {
         Long totalAppts = getTotalAppointementsforSchedule(schedule);
-        Long appointmentsScheduledTimes = getScheduledAppointments(schedule);
+        Long appointmentsScheduledTimes = getScheduledAppointments(schedule, scheduleEditMode);
         long remainingAppointments = totalAppts - appointmentsScheduledTimes;
         if (remainingAppointments <= 0)
             throw new BadRequestException("Max (" + totalAppts + ") number of appointment exceeded!");
         long countInput;
         String recurrenceRule = schedule.getRecurrenceRule();
         if (recurrenceRule.contains("COUNT=")) {
-            countInput = getCountFromRule(recurrenceRule,
-                    ruleMap -> (Objects.isNull(ruleMap) || !ruleMap.containsKey("count") || !NumberUtils.isCreatable(ruleMap.get("count"))));
+            countInput = getCountFromRule(recurrenceRule, ScheduleRecurrenceUtil.RULE_EVALUATION);
             if (countInput <= remainingAppointments)
                 return recurrenceRule;
             else
-                return recurrenceRule.substring(0,recurrenceRule.indexOf("COUNT="))
+                return recurrenceRule.substring(0, recurrenceRule.indexOf("COUNT="))
                         + "COUNT=" + remainingAppointments + ";";
         } else {
             return recurrenceRule + ("COUNT=" + remainingAppointments + ";");
         }
     }
-
-    // This is not being used
-    /*private List<Schedule> createSchedulesOfDaily(Map<String, String> ruleMap, Schedule schedule) {
-        Long totalAppts = getTotalAppointementsforSchedule(schedule);
-        Long appointmentsScheduledTimes = getScheduledAppointments(schedule);
-        int interval = Integer.parseInt(ruleMap.get("interval"));
-        String seriesIdentifier = getSerialNumber();
-        // First schedule
-        List<Schedule> schedules = new ArrayList<>();
-        schedule.setSeriesIdentifier(seriesIdentifier);
-        schedules.add(schedule);
-        for (int i = 1; i < (totalAppts - appointmentsScheduledTimes); i++) {
-            Schedule prevSchedule = schedules.get(i - 1);
-            Schedule newSchedule = Schedule.scheduleFrom(prevSchedule);
-            Date startTime = prevSchedule.getStartTime();
-            Date endTime = prevSchedule.getEndTime();
-            newSchedule.setStartTime(DateUtils.addDays(startTime, interval));
-            newSchedule.setEndTime(DateUtils.addDays(endTime, interval));
-            schedules.add(newSchedule);
-        }
-
-        return schedules;
-    }*/
-
-    // This is not being used
-    /*public List<Schedule> parseRecurrenceRule(Schedule schedule) {
-        String recurrenceRule = schedule.getRecurrenceRule();
-        Map<String, String> ruleMap = tokenizeRuleIntoMap(recurrenceRule);
-        if (Objects.isNull(ruleMap) || ruleMap.isEmpty()) return null;
-        if (ruleMap.get("freq").equals("daily")) {
-            return createSchedulesOfDaily(ruleMap, schedule);
-        }
-        return null;
-    }*/
 }

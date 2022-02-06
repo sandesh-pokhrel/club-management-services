@@ -34,9 +34,16 @@ public class Schedule implements Serializable {
     private Boolean isReadOnly;
 
     private String seriesIdentifier;
+    private Integer deletedCount;
 
     @JsonProperty("RecurrenceRule")
     private String recurrenceRule;
+
+    @JsonProperty("RecurrenceException")
+    private String recurrenceException;
+
+    @JsonProperty("RecurrenceID")
+    private Integer recurrenceId;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sub_category_id", referencedColumnName = "sub_category_id")
