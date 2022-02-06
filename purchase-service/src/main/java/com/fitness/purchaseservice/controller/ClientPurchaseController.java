@@ -22,6 +22,11 @@ public class ClientPurchaseController {
         return this.clientPurchaseService.getAllPurchases(paramMap);
     }
 
+    @GetMapping("/purchase/{id}")
+    public ClientPurchase getClientPurchaseById(@PathVariable Integer id) {
+        return this.clientPurchaseService.getPurchaseById(id);
+    }
+
     @GetMapping("/{username}")
     public List<ClientPurchase> getAllClientPurchaseForClient(@PathVariable String username) {
         return this.clientPurchaseService.getAllPurchasesForClient(username);
