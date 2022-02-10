@@ -1,3 +1,5 @@
+use club_management_clients;
+
 -- Client table inserts
 insert into client (username, first_name, last_name, gender, dob, email, cell_phone, home_phone, work_phone,
                     emergency_contact, emergency_contact_phone, address, city, province, postal_code, is_prospect)
@@ -40,3 +42,5 @@ values ('What is you major intention of joining gym?', 'textarea', null, true);
 
 insert into questionnaire (question, input_type, options, enabled)
 values ('Please rate how much muscle you intend to make?', 'rating', '1,2,3,4,5', true);
+
+COMMIT;
