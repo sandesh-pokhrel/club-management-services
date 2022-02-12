@@ -1,3 +1,7 @@
+drop database if exists club_management_purchase;
+create database club_management_purchase;
+use club_management_purchase;
+
 drop table if exists purchase_category;
 create table purchase_category
 (

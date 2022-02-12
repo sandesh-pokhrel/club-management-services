@@ -1,3 +1,5 @@
+use club_management_purchase;
+
 insert into purchase_category (category_name) values ('New Personal Training');
 insert into purchase_category (category_name) values ('Consultations');
 

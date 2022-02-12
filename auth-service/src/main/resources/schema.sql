@@ -1,3 +1,4 @@
+drop database if exists club_management_auth;
 create database club_management_auth;
 use club_management_auth;
 

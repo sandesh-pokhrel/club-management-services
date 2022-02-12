@@ -1,3 +1,5 @@
+use club_management_auth;
+
 -- BASIC AUTH with token time declarationuser_role
 -- ACCESS TOKEN VALIDITY = 300 SECOND
 -- REFRESH TOKEN VALIDITY = 1800 SECOND
