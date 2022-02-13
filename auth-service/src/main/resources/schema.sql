@@ -87,6 +87,15 @@ create table oauth_client_token
     client_id         VARCHAR(255)
 );
 
+drop table if exists user_level;
+create table user_level
+(
+    id              integer      not null auto_increment,
+    level_name      varchar(200) not null,
+    level_seniority integer      not null,
+    constraint pk_user_level_id primary key (id)
+);
+
 drop table if exists auth_user;
 create table auth_user
 (
@@ -101,7 +110,7 @@ create table auth_user
     group_custom_rate double,
     constraint pk_auth_user_username primary key (username),
     constraint fk_auth_user_level
-        foreign key (level) references club_management_purchase.purchase_sub_category(sub_category_id)
+        foreign key (level) references user_level (id)
 );
 
 drop table if exists auth_role;

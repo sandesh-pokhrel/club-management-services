@@ -1,7 +1,9 @@
 package com.fitness.authservice.service;
 
 import com.fitness.authservice.model.User;
+import com.fitness.authservice.model.UserLevel;
 import com.fitness.authservice.repository.RoleRepository;
+import com.fitness.authservice.repository.UserLevelRepository;
 import com.fitness.authservice.repository.UserRepository;
 import com.fitness.sharedapp.common.Constants;
 import com.fitness.sharedapp.exception.NotFoundException;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 public class UserService extends GenericService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final UserLevelRepository userLevelRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -59,6 +62,10 @@ public class UserService extends GenericService implements UserDetailsService {
 
     public User getByUsername(String username) {
         return this.userRepository.findById(username).orElse(null);
+    }
+
+    public List<UserLevel> getAllUserLevels() {
+        return this.userLevelRepository.findAll();
     }
 
     @Override
