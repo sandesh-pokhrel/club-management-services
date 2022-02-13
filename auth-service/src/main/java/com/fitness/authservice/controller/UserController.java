@@ -1,6 +1,7 @@
 package com.fitness.authservice.controller;
 
 import com.fitness.authservice.model.User;
+import com.fitness.authservice.model.UserLevel;
 import com.fitness.authservice.request.ChangeLogin;
 import com.fitness.authservice.service.UserService;
 import com.fitness.sharedapp.exception.BadRequestException;
@@ -24,7 +25,7 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User register(@RequestBody User user, @RequestParam String mode) {
+    public User save(@RequestBody User user, @RequestParam String mode) {
         return this.userService.saveUser(user, mode);
     }
 
@@ -32,6 +33,12 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public Page<User> getAllUsers(@RequestParam Map<String, String> paramMap) {
         return this.userService.getAllUsers(paramMap);
+    }
+
+    @GetMapping("/levels")
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserLevel> getAllUserLevels() {
+        return this.userService.getAllUserLevels();
     }
 
     @GetMapping("/usernames")

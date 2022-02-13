@@ -2,7 +2,6 @@ package com.fitness.authservice.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +26,6 @@ public class User {
     private String password;
     private String email;
     private String cellPhone;
-    private String level;
     private Double customRate;
     private Double groupCustomRate;
 
@@ -35,4 +33,8 @@ public class User {
     @JsonManagedReference
     @JsonIgnore
     private List<Role> roles;
+
+    @ManyToOne
+    @JoinColumn(name = "level", referencedColumnName = "id")
+    private UserLevel userLevel;
 }
