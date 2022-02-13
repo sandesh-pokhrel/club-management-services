@@ -23,4 +23,8 @@ public class PurchaseCategoryService {
     public List<PurchaseSubCategory> getSubCategoryByIds(List<Integer> ids) {
         return this.purchaseSubCategoryRepository.findAllById(ids);
     }
+
+    public PurchaseCategory savePurchaseCategory(PurchaseCategory purchaseCategory) {
+        return this.purchaseCategoryRepository.save(purchaseCategory);
+    }
 }
