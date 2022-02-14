@@ -7,6 +7,7 @@ import com.fitness.purchaseservice.service.ClientPurchaseService;
 import com.fitness.purchaseservice.service.PurchaseCategoryService;
 import com.fitness.sharedapp.exception.BadRequestException;
 import lombok.AllArgsConstructor;
+import org.springframework.security.oauth2.common.exceptions.InvalidRequestException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/purchases")
 @AllArgsConstructor
-public class PurchaseController {
+public class PurchaseCategoryController {
 
     private final PurchaseCategoryService purchaseCategoryService;
     private final ClientPurchaseService clientPurchaseService;
@@ -43,4 +44,25 @@ public class PurchaseController {
         return this.purchaseCategoryService.savePurchaseCategory(purchaseCategory);
     }
 
+    @PostMapping("/sub-categories/{categoryId}")
+    public PurchaseSubCategory savePurchaseSubCategory(@RequestBody PurchaseSubCategory purchaseSubCategory,
+                                                       @PathVariable Integer categoryId) {
+        if (Objects.isNull(purchaseSubCategory) || Objects.isNull(categoryId))
+            throw new BadRequestException("Invalid values provided!");
+        PurchaseCategory purchaseCategory = purchaseCategoryService.getPurchaseCategoryById(categoryId);
+        purchaseSubCategory.setPurchaseCategory(purchaseCategory);
+        return this.purchaseCategoryService.savePurchaseSubCategory(purchaseSubCategory);
+    }
+
+    @PutMapping("/sub-categories/{categoryId}")
+    public PurchaseSubCategory editPurchaseSubCategory(@RequestBody PurchaseSubCategory purchaseSubCategory,
+                                                       @PathVariable Integer categoryId) {
+        if (Objects.isNull(purchaseSubCategory) || Objects.isNull(categoryId))
+            throw new BadRequestException("Invalid values provided!");
+        if (Objects.isNull(purchaseSubCategory.getId()) || !purchaseCategoryService.purchaseSubCategoryExists(purchaseSubCategory.getId()))
+            throw new InvalidRequestException("Purchase sub category with given id not found!");
+        PurchaseCategory purchaseCategory = purchaseCategoryService.getPurchaseCategoryById(categoryId);
+        purchaseSubCategory.setPurchaseCategory(purchaseCategory);
+        return this.purchaseCategoryService.savePurchaseSubCategory(purchaseSubCategory);
+    }
 }
