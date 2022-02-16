@@ -25,7 +25,7 @@ values ('Entry Level Consultant', 7),
 -- dummy username sandesh and password sandesh
 insert into auth_user
 values ('sandesh', '$2a$12$K89EqUvfERXAB0/diRrAb.OZdOLI2ZLpR1mTZysCB4qUspYj1e22y',
-        'sandesh.pokhrel56@gmail.com', '9842100964', 'Sandesh', 'Pokhrel', 100, 500, 1);
+        'sandesh.pokhrel56@gmail.com', '9842100964', 'Sandesh', 'Pokhrel', 1, 100, 500);
 insert into auth_role (name, description)
 values ('ROLE_USER', 'Simple User - Has basic privileges');
 insert into auth_role (name, description)
