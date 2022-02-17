@@ -11,7 +11,9 @@ import com.fitness.sharedapp.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
@@ -108,6 +110,7 @@ public class ScheduleService {
                 setReadOnlyBehaviorOnEdit(schedule, clientPurchase);
             }
         }
+        schedule.setPurchaseId(clientPurchase.getId());
         return this.scheduleRepository.save(schedule);
     }
 
@@ -137,5 +140,15 @@ public class ScheduleService {
             schedule.setDeletedCount(1);
         }
         this.scheduleRepository.save(schedule);
+    }
+
+    public Map<String, Long> getTotalScheduledAndCompleted(Integer id) {
+        Map<String, Long> apptStatsMap = new HashMap<>();
+        List<Schedule> schedules = this.scheduleRepository.findAllByPurchaseId(id);
+        Long totalScheduled = this.scheduleRecurrenceUtil.getScheduledAppointmentsForSchedules(schedules);
+        Long totalCompleted = this.scheduleRecurrenceUtil.getCompletedAppointmentsForSchedules(schedules);
+        apptStatsMap.put("scheduled", totalScheduled);
+        apptStatsMap.put("completed", totalCompleted);
+        return apptStatsMap;
     }
 }

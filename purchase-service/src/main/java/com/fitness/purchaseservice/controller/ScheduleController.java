@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -54,5 +55,11 @@ public class ScheduleController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteSchedule(@PathVariable Integer id) {
         this.scheduleService.deleteSchedule(id);
+    }
+
+    @GetMapping("/appointment-stat/{purchaseId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Map<String, Long> getScheduleStatForPurchase(@PathVariable Integer purchaseId) {
+        return this.scheduleService.getTotalScheduledAndCompleted(purchaseId);
     }
 }

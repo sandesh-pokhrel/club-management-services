@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
 @Component
@@ -54,6 +55,29 @@ public class ScheduleRecurrenceUtil extends GeneralUtil {
         if (Objects.isNull(clientPurchase))
             throw new NotFoundException("No purchase found. Unable to set the schedule!");
         return Long.valueOf(clientPurchase.getAppts());
+    }
+
+    public Long getScheduledAppointmentsForSchedules(List<Schedule> schedules) {
+        long totalNonSeriesAppts = schedules.stream()
+                .filter(schedule -> Objects.isNull(schedule.getRecurrenceRule())).count();
+        AtomicLong totalRecurrent = new AtomicLong(0);
+        schedules.stream()
+                .filter(schedule -> Objects.nonNull(schedule.getRecurrenceRule()) && Objects.isNull(schedule.getRecurrenceId()))
+                .forEach(schedule -> {
+                    totalRecurrent.set(totalRecurrent.get() + getCountFromRule(schedule.getRecurrenceRule(), RULE_EVALUATION));
+                    if (Objects.nonNull(schedule.getDeletedCount()))
+                        totalRecurrent.set(totalRecurrent.get() - schedule.getDeletedCount());
+                });
+        return totalNonSeriesAppts + totalRecurrent.get();
+    }
+
+    public Long getCompletedAppointmentsForSchedules(List<Schedule> schedules) {
+        long totalCompletedNonSeriesAppts = schedules.stream()
+                .filter(schedule -> Objects.isNull(schedule.getRecurrenceRule()) && (Objects.nonNull(schedule.getIsReadOnly()) && schedule.getIsReadOnly())).count();
+        long totalCompletedSeriesAppts = schedules.stream()
+                .filter(schedule -> Objects.nonNull(schedule.getRecurrenceRule()) &&
+                        Objects.nonNull(schedule.getRecurrenceId()) && (Objects.nonNull(schedule.getIsReadOnly()) && schedule.getIsReadOnly())).count();
+        return totalCompletedNonSeriesAppts + totalCompletedSeriesAppts;
     }
 
     public Long getScheduledAppointments(Schedule schedule, ScheduleEditMode scheduleEditMode) {
