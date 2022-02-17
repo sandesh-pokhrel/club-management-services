@@ -71,6 +71,10 @@ public class Client extends RepresentationModel<Client> {
     @JsonManagedReference
     private List<ClientAssessment> clientAssessments;
 
+    @OneToOne(mappedBy = "client", fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private ClientGoal clientGoal;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

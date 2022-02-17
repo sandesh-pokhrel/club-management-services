@@ -1,6 +1,8 @@
 package com.fitness.clientservice.service;
 
 import com.fitness.clientservice.model.Client;
+import com.fitness.clientservice.model.ClientGoal;
+import com.fitness.clientservice.repository.ClientGoalRepository;
 import com.fitness.clientservice.repository.ClientRepository;
 import com.fitness.sharedapp.common.Constants;
 import com.fitness.sharedapp.exception.AlreadyExistsException;
@@ -22,6 +24,7 @@ import java.util.Objects;
 public class ClientService extends GenericService {
 
     private final ClientRepository clientRepository;
+    private final ClientGoalRepository clientGoalRepository;
 
     public Page<Client> getAllClients(Map<String, String> paramMap) {
         Integer page = getPageNumber(paramMap);
@@ -66,5 +69,9 @@ public class ClientService extends GenericService {
         else if (this.clientRepository.existsByEmailAndUsernameNot(client.getEmail(), username))
             throw new AlreadyExistsException("Email already exists!");
         return this.clientRepository.save(client);
+    }
+
+    public ClientGoal saveClientGoal(ClientGoal clientGoal) {
+        return this.clientGoalRepository.save(clientGoal);
     }
 }

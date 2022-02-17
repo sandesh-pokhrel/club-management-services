@@ -1,7 +1,9 @@
 package com.fitness.clientservice.controller;
 
 import com.fitness.clientservice.model.Client;
+import com.fitness.clientservice.model.ClientGoal;
 import com.fitness.clientservice.service.ClientService;
+import com.fitness.sharedapp.exception.NotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -50,6 +53,15 @@ public class ClientController {
     @ResponseStatus(HttpStatus.OK)
     public String getClientUsernameConcatFullNameByUsername(@PathVariable String username) {
         return this.clientService.getClientUsernameConcatFullNameByUsername(username);
+    }
+
+    @PostMapping("/client-goals/{username}")
+    public ClientGoal saveClientGoal(@RequestBody ClientGoal clientGoal, @PathVariable String username) {
+        Client client = this.clientService.getClientByUsername(username);
+        if (Objects.isNull(client))
+            throw new NotFoundException("Unable to add goal, client not found!");
+        clientGoal.setClient(client);
+        return this.clientService.saveClientGoal(clientGoal);
     }
 
     @GetMapping("/{username}")

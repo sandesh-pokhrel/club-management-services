@@ -112,6 +112,23 @@ create table client_assessment
         references club_management_auth.auth_user (username)
 );
 
+drop table if exists client_goal;
+create table client_goal
+(
+    id              integer      not null auto_increment,
+    client_username varchar(100) not null,
+    first_goal      varchar(500),
+    second_goal     varchar(500),
+    third_goal      varchar(500),
+    first_obstacle  varchar(500),
+    second_obstacle varchar(500),
+    third_obstacle  varchar(500),
+    prescription    varchar(3000),
+    objection       varchar(500),
+    constraint pk_client_goals_id primary key (id),
+    constraint fk_client_goals_clusername foreign key (client_username) references client (username)
+);
+
 drop view if exists user;
 create view user
 as
