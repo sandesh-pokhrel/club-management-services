@@ -4,7 +4,6 @@ import com.fitness.purchaseservice.model.PurchaseCategory;
 import com.fitness.purchaseservice.model.PurchaseSubCategory;
 import com.fitness.purchaseservice.repository.PurchaseCategoryRepository;
 import com.fitness.purchaseservice.repository.PurchaseSubCategoryRepository;
-import com.fitness.sharedapp.exception.BadRequestException;
 import com.fitness.sharedapp.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
