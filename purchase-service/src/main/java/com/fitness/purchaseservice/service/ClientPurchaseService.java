@@ -5,6 +5,7 @@ import com.fitness.purchaseservice.model.Schedule;
 import com.fitness.purchaseservice.repository.ClientPurchaseRepository;
 import com.fitness.sharedapp.common.Constants;
 import com.fitness.sharedapp.exception.AlreadyExistsException;
+import com.fitness.sharedapp.exception.BadRequestException;
 import com.fitness.sharedapp.exception.NotFoundException;
 import com.fitness.sharedapp.service.GenericService;
 import lombok.AllArgsConstructor;
@@ -24,15 +25,36 @@ import java.util.Objects;
 public class ClientPurchaseService extends GenericService {
 
     private final ClientPurchaseRepository clientPurchaseRepository;
+    private final ClientPurchaseInstallmentService clientPurchaseInstallmentService;
+
+    private void validatePurchaseScenario(ClientPurchase clientPurchase) {
+        if (Objects.nonNull(clientPurchase.getInitialDownpayment())
+                && clientPurchase.getInitialDownpayment() > clientPurchase.getPaymentAmount())
+            throw new BadRequestException("Downpayment cannot be greater than amount!");
+        else if (!Objects.equals(clientPurchase.getInitialDownpayment(), clientPurchase.getPaymentAmount())
+            && (Objects.isNull(clientPurchase.getNoOfPostdates()) || clientPurchase.getNoOfPostdates() == 0))
+            throw new BadRequestException("Purchase with partial payment must have no. of postdates specified!");
+        else if (!Objects.equals(clientPurchase.getInitialDownpayment(), clientPurchase.getPaymentAmount())
+                && (Objects.isNull(clientPurchase.getPaymentInterval())))
+            throw new BadRequestException("Purchase with partial payment must have a payment interval!");
+    }
 
     public ClientPurchase saveClientPurchase(ClientPurchase clientPurchase) {
         if (this.clientPurchaseRepository
                 .existsByClientUsernameAndPurchaseSubCategory(clientPurchase.getClientUsername(), clientPurchase.getPurchaseSubCategory())
         && Objects.isNull(clientPurchase.getId()))
             throw new AlreadyExistsException("A client cannot have two active package of same type!");
-        clientPurchase.setApptScheduled(0);
-        clientPurchase.setPurchaseDate(new Date());
-        return this.clientPurchaseRepository.save(clientPurchase);
+        validatePurchaseScenario(clientPurchase);
+        ClientPurchase purchase;
+        if (Objects.isNull(clientPurchase.getId())) {
+            clientPurchase.setApptScheduled(0);
+            clientPurchase.setPurchaseDate(new Date());
+            purchase = this.clientPurchaseRepository.save(clientPurchase);
+            this.clientPurchaseInstallmentService.savePendingInstallmentsDuringPurchase(purchase);
+        } else {
+            purchase = this.clientPurchaseRepository.save(clientPurchase);
+        }
+        return purchase;
     }
 
     public ClientPurchase getPurchaseById(Integer id) {
