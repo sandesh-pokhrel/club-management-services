@@ -3,8 +3,11 @@ package com.fitness.purchaseservice.service;
 import com.fitness.purchaseservice.model.ClientPurchase;
 import com.fitness.purchaseservice.model.ClientPurchaseInstallment;
 import com.fitness.purchaseservice.repository.ClientPurchaseInstallmentRepository;
+import com.fitness.sharedapp.exception.BadRequestException;
+import com.fitness.sharedapp.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.time.DateUtils;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,6 +23,18 @@ public class ClientPurchaseInstallmentService {
 
     public List<ClientPurchaseInstallment> getAllInstallmentsByPurchaseId(Integer purchaseId) {
         return this.clientPurchaseInstallmentRepository.findAllByClientPurchaseId(purchaseId);
+    }
+
+    public ClientPurchaseInstallment saveInstallment(ClientPurchaseInstallment clientPurchaseInstallment) {
+        return this.clientPurchaseInstallmentRepository.save(clientPurchaseInstallment);
+    }
+
+    public void deleteInstallment(Integer installmentId) {
+        ClientPurchaseInstallment clientPurchaseInstallment = this.clientPurchaseInstallmentRepository.findById(installmentId)
+                .orElseThrow(() -> new NotFoundException("Purchase installment entry not found!"));
+        if (clientPurchaseInstallment.getStatus().equalsIgnoreCase("paid"))
+            throw new BadRequestException("Cannot delete already paid installment!");
+        this.clientPurchaseInstallmentRepository.deleteById(installmentId);
     }
 
     public void savePendingInstallmentsDuringPurchase(ClientPurchase clientPurchase) {
