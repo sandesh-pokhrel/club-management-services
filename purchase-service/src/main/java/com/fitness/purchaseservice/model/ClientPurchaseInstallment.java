@@ -19,7 +19,9 @@ public class ClientPurchaseInstallment {
     private Integer id;
     private Integer clientPurchaseId;
     private Double amount;
+    @Temporal(TemporalType.DATE)
     private Date expectedPayDate;
+    @Temporal(TemporalType.DATE)
     private Date actualPayDate;
     private Boolean isPif;
     private String status;

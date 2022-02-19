@@ -7,7 +7,6 @@ import com.fitness.sharedapp.exception.BadRequestException;
 import com.fitness.sharedapp.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.time.DateUtils;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -54,7 +53,7 @@ public class ClientPurchaseInstallmentService {
             Double amountInEachInstallment = remainingAmountToBePaid / clientPurchase.getNoOfPostdates();
             List<ClientPurchaseInstallment> installments = new ArrayList<>();
             ClientPurchaseInstallment clientPurchaseInstallment = null;
-            for (int i=0; i<clientPurchase.getNoOfPostdates(); i++) {
+            for (int i = 0; i < clientPurchase.getNoOfPostdates(); i++) {
                 Date expectedDate;
                 if (Objects.isNull(clientPurchaseInstallment)) {
                     expectedDate = clientPurchase.getFirstPostdate();
