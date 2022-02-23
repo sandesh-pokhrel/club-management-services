@@ -26,6 +26,12 @@ public class ScheduleController {
         return this.scheduleService.getAllSchedules();
     }
 
+    @GetMapping("/purchase/{purchaseId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Schedule> getAllSchedulesByPurchase(@PathVariable Integer purchaseId) {
+        return this.scheduleService.getAllSchedulesByPurchase(purchaseId);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Schedule saveSchedule(@RequestBody Schedule schedule, @RequestParam String mode) {

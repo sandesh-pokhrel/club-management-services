@@ -5,6 +5,7 @@ import com.fitness.purchaseservice.model.Schedule;
 import com.fitness.purchaseservice.model.ScheduleEditMode;
 import com.fitness.purchaseservice.repository.ScheduleRepository;
 import com.fitness.purchaseservice.service.ClientPurchaseService;
+import com.fitness.sharedapp.common.Constants;
 import com.fitness.sharedapp.exception.BadRequestException;
 import com.fitness.sharedapp.exception.NotFoundException;
 import com.fitness.sharedapp.util.GeneralUtil;
@@ -12,10 +13,7 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
@@ -81,8 +79,11 @@ public class ScheduleRecurrenceUtil extends GeneralUtil {
     }
 
     public Long getScheduledAppointments(Schedule schedule, ScheduleEditMode scheduleEditMode) {
+//        Long totalNonSeriesAppts = this.scheduleRepository
+//                .countByClientUsernameAndPurchaseSubCategoryAndRecurrenceRuleIsNull(schedule.getClientUsername(), schedule.getPurchaseSubCategory());
         Long totalNonSeriesAppts = this.scheduleRepository
-                .countByClientUsernameAndPurchaseSubCategoryAndRecurrenceRuleIsNull(schedule.getClientUsername(), schedule.getPurchaseSubCategory());
+                .countByClientUsernameAndPurchaseSubCategoryAndStatusNotInAndRecurrenceRuleIsNull(schedule.getClientUsername(),
+                        schedule.getPurchaseSubCategory(), Arrays.asList(Constants.DELETED_ALIKE_SCHEDULE_STATUS));
         List<Schedule> schedulesWithNonNullRecurrence = this.scheduleRepository
                 .findAllByClientUsernameAndPurchaseSubCategoryAndRecurrenceRuleIsNotNullAndRecurrenceIdIsNull(schedule.getClientUsername(), schedule.getPurchaseSubCategory());
         Long totalAppts = totalNonSeriesAppts;

@@ -6,9 +6,11 @@ import com.fitness.purchaseservice.model.ScheduleEditMode;
 import com.fitness.purchaseservice.repository.ClientPurchaseRepository;
 import com.fitness.purchaseservice.repository.ScheduleRepository;
 import com.fitness.purchaseservice.util.ScheduleRecurrenceUtil;
+import com.fitness.sharedapp.common.Constants;
 import com.fitness.sharedapp.exception.BadRequestException;
 import com.fitness.sharedapp.exception.NotFoundException;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -38,8 +40,10 @@ public class ScheduleService {
     }
 
     private void setReadOnlyBehaviorOnEdit(Schedule schedule, ClientPurchase clientPurchase) {
-        schedule.setIsReadOnly(schedule.getStatus().equalsIgnoreCase("completed"));
-        if (schedule.getStatus().equalsIgnoreCase("completed")) {
+        if (StringUtils.equalsAnyIgnoreCase(schedule.getStatus(), Constants.READ_ONLY_ALIKE_SCHEDULE_STATUS)) {
+            schedule.setIsReadOnly(true);
+        }
+        if (StringUtils.equalsAnyIgnoreCase(schedule.getStatus(), Constants.COMPLETED_ALIKE_SCHEDULE_STATUS)) {
             Long totalCompletedSchedule = this.scheduleRepository.
                     countByClientUsernameAndPurchaseSubCategoryAndStatusIgnoreCase(schedule.getClientUsername(), schedule.getPurchaseSubCategory(), "COMPLETED");
             if (++totalCompletedSchedule == clientPurchase.getAppts().longValue())
@@ -54,6 +58,10 @@ public class ScheduleService {
 
     public List<Schedule> getAllSchedules() {
         return this.scheduleRepository.findAll();
+    }
+
+    public List<Schedule> getAllSchedulesByPurchase(Integer purchaseId) {
+        return this.scheduleRepository.findAllByPurchaseId(purchaseId);
     }
 
     public Schedule saveSchedule(Schedule schedule, String mode, boolean isRecurrent) {
@@ -75,7 +83,7 @@ public class ScheduleService {
                 // Passed schedule is not an edited instance of a series
                 if (Objects.isNull(schedule.getRecurrenceId())) {
                     // Does not allow completing whole series at once
-                    if (schedule.getStatus().equalsIgnoreCase("completed"))
+                    if (StringUtils.equalsAnyIgnoreCase(schedule.getStatus(), Constants.READ_ONLY_ALIKE_SCHEDULE_STATUS))
                         throw new BadRequestException("Cannot mark whole appointment series as completed");
                     // Schedule to edit is already a recurrence schedule
                     if (Objects.nonNull(scheduleFromDb.getRecurrenceRule())) {
@@ -104,6 +112,12 @@ public class ScheduleService {
                     setReadOnlyBehaviorOnEdit(schedule, clientPurchase);
                     if (Objects.isNull(editedScheduleInDb)) schedule.setId(null);
                     else schedule.setId(editedScheduleInDb.getId());
+                    if (StringUtils.equalsAnyIgnoreCase(schedule.getStatus(), Constants.DELETED_ALIKE_SCHEDULE_STATUS)) {
+                        Integer deletedCount = scheduleFromDb.getDeletedCount();
+                        if (Objects.isNull(deletedCount) || deletedCount == 0)
+                            scheduleFromDb.setDeletedCount(1);
+                        else scheduleFromDb.setDeletedCount(scheduleFromDb.getDeletedCount() + 1);
+                    }
                     this.scheduleRepository.save(scheduleFromDb);
                 }
             } else {
