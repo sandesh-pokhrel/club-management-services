@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 
 @Service
 @AllArgsConstructor
@@ -52,9 +53,10 @@ public class ClientService extends GenericService {
 
     public Client saveClient(Client client) {
         String username = client.getUsername();
-        if (this.clientRepository.existsById(username))
-            throw new AlreadyExistsException(String.format("Username (%s) already exists!", username));
-        else if (this.clientRepository.existsByCellPhone(client.getCellPhone()))
+        if (this.clientRepository.existsById(username)) {
+            int randomNumber = new Random().nextInt(900) + 100;
+            client.setUsername(client.getUsername()+randomNumber);
+        } else if (this.clientRepository.existsByCellPhone(client.getCellPhone()))
             throw new AlreadyExistsException("Cellphone already exists!");
         else if (this.clientRepository.existsByEmail(client.getEmail()))
             throw new AlreadyExistsException("Email already exists!");
