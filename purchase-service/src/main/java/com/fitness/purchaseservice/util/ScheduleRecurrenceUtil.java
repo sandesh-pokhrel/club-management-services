@@ -71,10 +71,45 @@ public class ScheduleRecurrenceUtil extends GeneralUtil {
 
     public Long getCompletedAppointmentsForSchedules(List<Schedule> schedules) {
         long totalCompletedNonSeriesAppts = schedules.stream()
-                .filter(schedule -> Objects.isNull(schedule.getRecurrenceRule()) && (Objects.nonNull(schedule.getIsReadOnly()) && schedule.getIsReadOnly())).count();
+                .filter(schedule -> Objects.isNull(schedule.getRecurrenceRule()) &&
+                        (Objects.nonNull(schedule.getIsReadOnly()) && schedule.getIsReadOnly()) && schedule.getStatus().equalsIgnoreCase("COMPLETED")).count();
         long totalCompletedSeriesAppts = schedules.stream()
                 .filter(schedule -> Objects.nonNull(schedule.getRecurrenceRule()) &&
-                        Objects.nonNull(schedule.getRecurrenceId()) && (Objects.nonNull(schedule.getIsReadOnly()) && schedule.getIsReadOnly())).count();
+                        Objects.nonNull(schedule.getRecurrenceId())
+                        && (Objects.nonNull(schedule.getIsReadOnly()) && schedule.getIsReadOnly()) && schedule.getStatus().equalsIgnoreCase("COMPLETED")).count();
+        return totalCompletedNonSeriesAppts + totalCompletedSeriesAppts;
+    }
+
+    public Long getCancelledAppointmentsForSchedules(List<Schedule> schedules) {
+        long totalCompletedNonSeriesAppts = schedules.stream()
+                .filter(schedule -> Objects.isNull(schedule.getRecurrenceRule()) &&
+                        (Objects.nonNull(schedule.getIsReadOnly()) && schedule.getIsReadOnly()) && schedule.getStatus().equalsIgnoreCase("CANCELLED")).count();
+        long totalCompletedSeriesAppts = schedules.stream()
+                .filter(schedule -> Objects.nonNull(schedule.getRecurrenceRule()) &&
+                        Objects.nonNull(schedule.getRecurrenceId())
+                        && (Objects.nonNull(schedule.getIsReadOnly()) && schedule.getIsReadOnly()) && schedule.getStatus().equalsIgnoreCase("CANCELLED")).count();
+        return totalCompletedNonSeriesAppts + totalCompletedSeriesAppts;
+    }
+
+    public Long getNoChargeAppointmentsForSchedules(List<Schedule> schedules) {
+        long totalCompletedNonSeriesAppts = schedules.stream()
+                .filter(schedule -> Objects.isNull(schedule.getRecurrenceRule())
+                        && (Objects.nonNull(schedule.getIsReadOnly()) && schedule.getIsReadOnly()) && schedule.getStatus().equalsIgnoreCase("NO_SHOW_NO_CHARGE")).count();
+        long totalCompletedSeriesAppts = schedules.stream()
+                .filter(schedule -> Objects.nonNull(schedule.getRecurrenceRule()) &&
+                        Objects.nonNull(schedule.getRecurrenceId())
+                        && (Objects.nonNull(schedule.getIsReadOnly()) && schedule.getIsReadOnly()) && schedule.getStatus().equalsIgnoreCase("NO_SHOW_NO_CHARGE")).count();
+        return totalCompletedNonSeriesAppts + totalCompletedSeriesAppts;
+    }
+
+    public Long getChargeAppointmentsForSchedules(List<Schedule> schedules) {
+        long totalCompletedNonSeriesAppts = schedules.stream()
+                .filter(schedule -> Objects.isNull(schedule.getRecurrenceRule())
+                        && (Objects.nonNull(schedule.getIsReadOnly()) && schedule.getIsReadOnly()) && schedule.getStatus().equalsIgnoreCase("NO_SHOW_CHARGE")).count();
+        long totalCompletedSeriesAppts = schedules.stream()
+                .filter(schedule -> Objects.nonNull(schedule.getRecurrenceRule()) &&
+                        Objects.nonNull(schedule.getRecurrenceId())
+                        && (Objects.nonNull(schedule.getIsReadOnly()) && schedule.getIsReadOnly()) && schedule.getStatus().equalsIgnoreCase("NO_SHOW_CHARGE")).count();
         return totalCompletedNonSeriesAppts + totalCompletedSeriesAppts;
     }
 

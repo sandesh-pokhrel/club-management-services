@@ -161,8 +161,14 @@ public class ScheduleService {
         List<Schedule> schedules = this.scheduleRepository.findAllByPurchaseId(id);
         Long totalScheduled = this.scheduleRecurrenceUtil.getScheduledAppointmentsForSchedules(schedules);
         Long totalCompleted = this.scheduleRecurrenceUtil.getCompletedAppointmentsForSchedules(schedules);
+        Long totalNoCharged = this.scheduleRecurrenceUtil.getNoChargeAppointmentsForSchedules(schedules);
+        Long totalCharged = this.scheduleRecurrenceUtil.getChargeAppointmentsForSchedules(schedules);
+        Long totalCancelled = this.scheduleRecurrenceUtil.getCancelledAppointmentsForSchedules(schedules);
         apptStatsMap.put("scheduled", totalScheduled);
         apptStatsMap.put("completed", totalCompleted);
+        apptStatsMap.put("cancelled", totalCancelled);
+        apptStatsMap.put("charged", totalCharged);
+        apptStatsMap.put("no_charged", totalNoCharged);
         return apptStatsMap;
     }
 }
