@@ -171,4 +171,12 @@ public class ScheduleService {
         apptStatsMap.put("no_charged", totalNoCharged);
         return apptStatsMap;
     }
+
+    public Map<String, Long> getTotalScheduled(Integer id) {
+        Map<String, Long> apptStatsMap = new HashMap<>();
+        List<Schedule> schedules = this.scheduleRepository.findAllByPurchaseId(id);
+        Long totalScheduled = this.scheduleRecurrenceUtil.getScheduledAppointmentsForSchedules(schedules);
+        apptStatsMap.put("scheduled", totalScheduled);
+        return apptStatsMap;
+    }
 }
