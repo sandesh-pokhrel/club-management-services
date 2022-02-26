@@ -26,9 +26,13 @@ public class ClientAssessmentController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ClientAssessment saveClientAssessment(@RequestBody ClientAssessment clientAssessment,
-                                                 @RequestParam String username) {
+                                                 @RequestParam String client,
+                                                 @RequestParam String trainer) {
+        return this.clientAssessmentService.saveClientAssessment(clientAssessment, client, trainer);
+    }
 
-
-        return this.clientAssessmentService.saveClientAssessment(clientAssessment, username);
+    @DeleteMapping("/{id}")
+    public void deleteAssessmentById(@PathVariable Integer id) {
+        this.clientAssessmentService.deleteAssessmentById(id);
     }
 }
