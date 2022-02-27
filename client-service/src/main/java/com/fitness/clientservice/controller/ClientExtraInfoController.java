@@ -34,7 +34,7 @@ public class ClientExtraInfoController {
         }
         String serial = generalUtil.getSerialNumber();
         ClientExtraInfo clientExtraInfo = new ClientExtraInfo(username, true, serial);
-        this.mailUtil.sendMail(client.getEmail(), MailType.CLIENT_QUESTIONNAIRE, serial);
+        this.mailUtil.sendMail(client.getEmail(), MailType.CLIENT_QUESTIONNAIRE, serial, null);
         this.clientExtraInfoService.save(clientExtraInfo);
     }
 
