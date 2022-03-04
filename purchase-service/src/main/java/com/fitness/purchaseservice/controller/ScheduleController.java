@@ -26,12 +26,6 @@ public class ScheduleController {
         return this.scheduleService.getAllSchedules();
     }
 
-    @GetMapping("/purchase/{purchaseId}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Schedule> getAllSchedulesByPurchase(@PathVariable Integer purchaseId) {
-        return this.scheduleService.getAllSchedulesByPurchase(purchaseId);
-    }
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Schedule saveSchedule(@RequestBody Schedule schedule, @RequestParam String mode) {
@@ -67,5 +61,17 @@ public class ScheduleController {
     @ResponseStatus(HttpStatus.OK)
     public Map<String, Long> getScheduleStatForPurchase(@PathVariable Integer purchaseId) {
         return this.scheduleService.getTotalScheduledAndCompleted(purchaseId);
+    }
+
+    @GetMapping("/agenda/purchase/{purchaseId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Schedule> getAgendaSchedulesByPurchase(@PathVariable Integer purchaseId) {
+        return this.scheduleService.getAgendaSchedulesByPurchase(purchaseId);
+    }
+
+    @GetMapping("/agenda/client/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Schedule> getAgendaSchedulesByPurchase(@PathVariable String username) {
+        return this.scheduleService.getAgendaSchedulesByClient(username);
     }
 }

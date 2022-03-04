@@ -179,4 +179,14 @@ public class ScheduleService {
         apptStatsMap.put("scheduled", totalScheduled);
         return apptStatsMap;
     }
+
+    public List<Schedule> getAgendaSchedulesByPurchase(Integer purchaseId) {
+        List<Schedule> schedules = this.scheduleRepository.findAllByPurchaseId(purchaseId);
+        return this.scheduleRecurrenceUtil.generateAgendaForSchedules(schedules);
+    }
+
+    public List<Schedule> getAgendaSchedulesByClient(String username) {
+        List<Schedule> schedules = this.scheduleRepository.findAllByClientUsername(username);
+        return this.scheduleRecurrenceUtil.generateAgendaForSchedules(schedules);
+    }
 }

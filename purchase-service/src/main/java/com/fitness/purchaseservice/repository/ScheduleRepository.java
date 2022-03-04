@@ -29,4 +29,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
     Optional<Schedule> findByRecurrenceExceptionAndRecurrenceId(String recurrenceException, Integer recurrenceId);
 
     List<Schedule> findAllByPurchaseId(Integer id);
+
+    List<Schedule> findAllByClientUsername(String username);
 }

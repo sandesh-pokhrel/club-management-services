@@ -11,15 +11,31 @@ import com.fitness.sharedapp.exception.NotFoundException;
 import com.fitness.sharedapp.util.GeneralUtil;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Component;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
 public class ScheduleRecurrenceUtil extends GeneralUtil {
+
+    public static final Map<String, Integer> WEEKLY_SCHEDULE_POINT = new HashMap<>();
+
+    static {
+        WEEKLY_SCHEDULE_POINT.put("su", 1);
+        WEEKLY_SCHEDULE_POINT.put("mo", 2);
+        WEEKLY_SCHEDULE_POINT.put("tu", 3);
+        WEEKLY_SCHEDULE_POINT.put("we", 4);
+        WEEKLY_SCHEDULE_POINT.put("th", 5);
+        WEEKLY_SCHEDULE_POINT.put("fr", 6);
+        WEEKLY_SCHEDULE_POINT.put("sa", 7);
+    }
 
     private static final Predicate<Map<String, String>> RULE_EVALUATION =
             ruleMap -> (Objects.isNull(ruleMap) || !ruleMap.containsKey("count") || !NumberUtils.isCreatable(ruleMap.get("count")));
@@ -46,6 +62,142 @@ public class ScheduleRecurrenceUtil extends GeneralUtil {
         if (evaluate.test(ruleMap))
             throw new BadRequestException("Invalid recurrence rule found!");
         return Long.parseLong(ruleMap.get("count"));
+    }
+
+    private int getIntervalFromRule(String rule) {
+        Map<String, String> ruleMap = tokenizeRuleIntoMap(rule);
+        return Integer.parseInt(ruleMap.get("interval"));
+    }
+
+    private String getDaysForWeeklyFromRule(String rule) {
+        Map<String, String> ruleMap = tokenizeRuleIntoMap(rule);
+        return ruleMap.get("byday");
+    }
+
+    private String getWeekDayName(Date startDateTime) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDateTime);
+        int weekDayNumber = calendar.get(Calendar.DAY_OF_WEEK);
+        for (Map.Entry<String, Integer> entry : WEEKLY_SCHEDULE_POINT.entrySet()) {
+            if (entry.getValue() == weekDayNumber) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+
+    private int getInitialIncrementForWeeklySchedule(List<String> byDays, Date startDateTime, int interval) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDateTime);
+        int weekDayNumber = calendar.get(Calendar.DAY_OF_WEEK);
+        String weekDayName = null;
+        for (Map.Entry<String, Integer> entry : WEEKLY_SCHEDULE_POINT.entrySet()) {
+            if (entry.getValue() == weekDayNumber) {
+                weekDayName = entry.getKey();
+                break;
+            }
+        }
+        if (Objects.nonNull(weekDayName) && byDays.contains(weekDayName)) return 0;
+        Integer temp = null;
+        for (String byDay : byDays) {
+            int currentWeekNumber = WEEKLY_SCHEDULE_POINT.get(byDay);
+            if (Objects.isNull(temp)) temp = currentWeekNumber;
+            if (weekDayNumber - currentWeekNumber < 0) return currentWeekNumber - weekDayNumber;
+        }
+        if (temp == null)
+            throw new RuntimeException("Weekly schedule initial increment fetch failed!");
+        return (7 - weekDayNumber) + (7 * (interval - 1)) + temp;
+    }
+
+    private Map<String, Integer> calculateDaysToAddForWeeklySchedule(List<String> byDays, int interval) {
+        Map<String, Integer> dayCostMap = new HashMap<>();
+        if (byDays.isEmpty()) throw new RuntimeException("Invalid weekly recurrent rule!");
+        else if (byDays.size() == 1) dayCostMap.put(byDays.get(0), 7 + (7 * (interval - 1)));
+        for (String byDay : byDays) {
+            if (byDays.indexOf(byDay) < (byDays.size() - 1)) {
+                String nextByDay = byDays.get(byDays.indexOf(byDay) + 1);
+                int cost = Math.abs(WEEKLY_SCHEDULE_POINT.get(byDay.toLowerCase()) - WEEKLY_SCHEDULE_POINT.get(nextByDay.toLowerCase()));
+                dayCostMap.put(byDay, cost);
+            } else {
+                int lastItemRemainingCost = 7 - WEEKLY_SCHEDULE_POINT.get(byDay.toLowerCase());
+                int firstItemCost = WEEKLY_SCHEDULE_POINT.get(byDays.get(0).toLowerCase());
+                dayCostMap.put(byDay, lastItemRemainingCost + (7 * (interval - 1)) + firstItemCost);
+            }
+        }
+        return dayCostMap;
+    }
+
+    private String getRecurrenceException(Date startDateTime) {
+        DateFormat formatterUTC = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
+        formatterUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return formatterUTC.format(startDateTime);
+    }
+
+
+    private List<Schedule> getAgendaForDaily(Schedule parentSchedule, List<Schedule> childSchedules) {
+        List<Schedule> finalSchedules = new ArrayList<>();
+        long scheduleCount = getCountFromRule(parentSchedule.getRecurrenceRule(), RULE_EVALUATION);
+        int interval = getIntervalFromRule(parentSchedule.getRecurrenceRule());
+        List<String> parentRecurrenceExceptions = Objects.isNull(parentSchedule.getRecurrenceException()) ? Collections.singletonList("")
+                : Arrays.asList(parentSchedule.getRecurrenceException().split(","));
+        for (int i = 0; i < scheduleCount; i++) {
+            Schedule resultSchedule;
+            String recurrenceException = getRecurrenceException(DateUtils.addDays(parentSchedule.getStartTime(), interval * i));
+            if (!parentRecurrenceExceptions.contains(recurrenceException)) {
+                resultSchedule = new Schedule(parentSchedule);
+                if (!(i == 0)) {
+                    resultSchedule.setStartTime(DateUtils.addDays(parentSchedule.getStartTime(), interval * i));
+                    resultSchedule.setEndTime(DateUtils.addDays(parentSchedule.getEndTime(), interval * i));
+                }
+            } else {
+                Schedule modifiedSchedule = childSchedules.stream()
+                        .filter(schedule -> schedule.getRecurrenceException().equals(recurrenceException))
+                        .findFirst().orElse(null);
+                if (Objects.isNull(modifiedSchedule)) continue;
+                resultSchedule = new Schedule(modifiedSchedule);
+            }
+            finalSchedules.add(resultSchedule);
+        }
+        return finalSchedules;
+    }
+
+    private List<Schedule> getAgendaForWeekly(Schedule parentSchedule, List<Schedule> childSchedules) {
+        List<Schedule> finalSchedules = new ArrayList<>();
+        long scheduleCount = getCountFromRule(parentSchedule.getRecurrenceRule(), RULE_EVALUATION);
+        int interval = getIntervalFromRule(parentSchedule.getRecurrenceRule());
+        List<String> byDays = Arrays.asList(getDaysForWeeklyFromRule(parentSchedule.getRecurrenceRule()).split(","));
+        int initialIncrement = getInitialIncrementForWeeklySchedule(byDays, parentSchedule.getStartTime(), interval);
+        Map<String, Integer> dayCostMap = calculateDaysToAddForWeeklySchedule(byDays, interval);
+        List<String> parentRecurrenceExceptions = Objects.isNull(parentSchedule.getRecurrenceException()) ? Collections.singletonList("")
+                : Arrays.asList(parentSchedule.getRecurrenceException().split(","));
+        parentSchedule.setStartTime(DateUtils.addDays(parentSchedule.getStartTime(), initialIncrement));
+        parentSchedule.setEndTime(DateUtils.addDays(parentSchedule.getEndTime(), initialIncrement));
+        Date startTimeTracked = parentSchedule.getStartTime();
+        Date endTimeTracked = parentSchedule.getEndTime();
+        for (int i = 0; i < scheduleCount; i++) {
+            Schedule resultSchedule;
+            String recurrenceException = getRecurrenceException(startTimeTracked);
+            if (!parentRecurrenceExceptions.contains(recurrenceException)) {
+                resultSchedule = new Schedule(parentSchedule);
+                if (!(i == 0)) {
+                    resultSchedule.setStartTime(startTimeTracked);
+                    resultSchedule.setEndTime(endTimeTracked);
+                }
+                startTimeTracked = DateUtils.addDays(startTimeTracked, dayCostMap.get(getWeekDayName(startTimeTracked)));
+                endTimeTracked = DateUtils.addDays(endTimeTracked, dayCostMap.get(getWeekDayName(startTimeTracked)));
+            } else {
+                Schedule modifiedSchedule = childSchedules.stream()
+                        .filter(schedule -> schedule.getRecurrenceException().equals(recurrenceException))
+                        .findFirst().orElse(null);
+                startTimeTracked = DateUtils.addDays(startTimeTracked, dayCostMap.get(getWeekDayName(startTimeTracked)));
+                endTimeTracked = DateUtils.addDays(endTimeTracked, dayCostMap.get(getWeekDayName(startTimeTracked)));
+                if (Objects.isNull(modifiedSchedule)) continue;
+                resultSchedule = new Schedule(modifiedSchedule);
+            }
+            finalSchedules.add(resultSchedule);
+        }
+        return finalSchedules;
     }
 
     private Long getTotalAppointementsforSchedule(Schedule schedule) {
@@ -114,8 +266,6 @@ public class ScheduleRecurrenceUtil extends GeneralUtil {
     }
 
     public Long getScheduledAppointments(Schedule schedule, ScheduleEditMode scheduleEditMode) {
-//        Long totalNonSeriesAppts = this.scheduleRepository
-//                .countByClientUsernameAndPurchaseSubCategoryAndRecurrenceRuleIsNull(schedule.getClientUsername(), schedule.getPurchaseSubCategory());
         Long totalNonSeriesAppts = this.scheduleRepository
                 .countByClientUsernameAndPurchaseSubCategoryAndStatusNotInAndRecurrenceRuleIsNull(schedule.getClientUsername(),
                         schedule.getPurchaseSubCategory(), Arrays.asList(Constants.DELETED_ALIKE_SCHEDULE_STATUS));
@@ -160,5 +310,26 @@ public class ScheduleRecurrenceUtil extends GeneralUtil {
         } else {
             return recurrenceRule + ("COUNT=" + remainingAppointments + ";");
         }
+    }
+
+    public List<Schedule> generateAgendaForSchedules(List<Schedule> schedules) {
+        List<Schedule> finalSchedules = new ArrayList<>();
+        schedules.forEach(schedule -> {
+            if (Objects.isNull(schedule.getRecurrenceRule())) {
+                finalSchedules.add(schedule);
+            } else if (Objects.nonNull(schedule.getRecurrenceRule())
+                    && Objects.isNull(schedule.getRecurrenceId()) && schedule.getRecurrenceRule().contains("DAILY")) {
+                List<Schedule> childSchedules = schedules.stream().filter(sch -> Objects.equals(sch.getRecurrenceId(), schedule.getId()))
+                        .collect(Collectors.toList());
+                finalSchedules.addAll(getAgendaForDaily(schedule, childSchedules));
+            } else if (Objects.nonNull(schedule.getRecurrenceRule())
+                    && Objects.isNull(schedule.getRecurrenceId()) && schedule.getRecurrenceRule().contains("WEEKLY")) {
+                List<Schedule> childSchedules = schedules.stream().filter(sch -> Objects.equals(sch.getRecurrenceId(), schedule.getId()))
+                        .collect(Collectors.toList());
+                finalSchedules.addAll(getAgendaForWeekly(schedule, childSchedules));
+            }
+        });
+
+        return finalSchedules;
     }
 }

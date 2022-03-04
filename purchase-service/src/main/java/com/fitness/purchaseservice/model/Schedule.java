@@ -14,8 +14,19 @@ import java.util.Date;
 @AllArgsConstructor
 @Entity
 @ToString
+@Builder
 @Table(name = "schedule")
 public class Schedule implements Serializable {
+
+    public Schedule(Schedule source) {
+        this.setSubject(source.getSubject());
+        this.setTrainerUsername(source.getTrainerUsername());
+        this.setClientUsername(source.getClientUsername());
+        this.setPurchaseId(source.getPurchaseId());
+        this.setStatus(source.getStatus());
+        this.setStartTime(source.getStartTime());
+        this.setEndTime(source.getEndTime());
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
