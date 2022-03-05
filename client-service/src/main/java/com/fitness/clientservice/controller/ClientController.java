@@ -89,4 +89,10 @@ public class ClientController {
     public Client updateClient(@Valid @RequestBody Client client, @PathVariable String username) {
         return this.clientService.updateClient(client, username);
     }
+
+    @DeleteMapping("/{username}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public void deleteClient(@PathVariable String username) {
+        this.clientService.deleteClient(username);
+    }
 }

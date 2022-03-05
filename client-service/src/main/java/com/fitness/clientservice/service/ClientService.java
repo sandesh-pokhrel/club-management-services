@@ -6,9 +6,11 @@ import com.fitness.clientservice.repository.ClientGoalRepository;
 import com.fitness.clientservice.repository.ClientRepository;
 import com.fitness.sharedapp.common.Constants;
 import com.fitness.sharedapp.exception.AlreadyExistsException;
+import com.fitness.sharedapp.exception.BadRequestException;
 import com.fitness.sharedapp.exception.NotFoundException;
 import com.fitness.sharedapp.service.GenericService;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -71,6 +73,14 @@ public class ClientService extends GenericService {
         else if (this.clientRepository.existsByEmailAndUsernameNot(client.getEmail(), username))
             throw new AlreadyExistsException("Email already exists!");
         return this.clientRepository.save(client);
+    }
+
+    public void deleteClient(String username) {
+        try {
+            this.clientRepository.deleteById(username);
+        } catch (DataIntegrityViolationException ex) {
+            throw new BadRequestException("Client has other associations. Could not delete the client!");
+        }
     }
 
     public ClientGoal saveClientGoal(ClientGoal clientGoal) {
