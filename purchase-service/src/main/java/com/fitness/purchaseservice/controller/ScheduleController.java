@@ -71,7 +71,13 @@ public class ScheduleController {
 
     @GetMapping("/agenda/client/{username}")
     @ResponseStatus(HttpStatus.OK)
-    public List<Schedule> getAgendaSchedulesByPurchase(@PathVariable String username) {
+    public List<Schedule> getAgendaSchedulesByClient(@PathVariable String username) {
         return this.scheduleService.getAgendaSchedulesByClient(username);
+    }
+
+    @GetMapping("/agenda/trainer/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Schedule> getAgendaSchedulesByTrainer(@PathVariable String username) {
+        return this.scheduleService.getAgendaSchedulesByTrainer(username);
     }
 }

@@ -31,4 +31,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
     List<Schedule> findAllByPurchaseId(Integer id);
 
     List<Schedule> findAllByClientUsername(String username);
+
+    List<Schedule> findAllByTrainerUsername(String username);
 }

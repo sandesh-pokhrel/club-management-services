@@ -189,4 +189,9 @@ public class ScheduleService {
         List<Schedule> schedules = this.scheduleRepository.findAllByClientUsername(username);
         return this.scheduleRecurrenceUtil.generateAgendaForSchedules(schedules);
     }
+
+    public List<Schedule> getAgendaSchedulesByTrainer(String username) {
+        List<Schedule> schedules = this.scheduleRepository.findAllByTrainerUsername(username);
+        return this.scheduleRecurrenceUtil.generateAgendaForSchedules(schedules);
+    }
 }
