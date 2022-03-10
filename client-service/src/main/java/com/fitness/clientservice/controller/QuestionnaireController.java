@@ -25,8 +25,20 @@ public class QuestionnaireController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Questionnaire> getAll() {
+    public List<Questionnaire> getAllEnabled() {
         return questionnaireService.getAllEnabledQuestions();
+    }
+
+    @GetMapping("/all")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Questionnaire> getAll() {
+        return questionnaireService.getAllQuestions();
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Questionnaire save(@RequestBody Questionnaire questionnaire) {
+        return questionnaireService.saveQuestion(questionnaire);
     }
 
     @PostMapping("/answers/{serial}")
