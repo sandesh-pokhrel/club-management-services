@@ -2,6 +2,15 @@ drop database if exists club_management_clients;
 create database club_management_clients;
 use club_management_clients;
 
+drop table if exists club;
+create table club
+(
+    id       integer      not null auto_increment,
+    name     varchar(500) not null,
+    location varchar(100) not null,
+    constraint pk_club_id primary key (id)
+);
+
 drop table if exists client;
 create table client
 (
@@ -21,7 +30,9 @@ create table client
     province                varchar(100),
     postal_code             integer,
     is_prospect             boolean,
-    constraint pk_client_username primary key (username)
+    club_id                 integer     not null,
+    constraint pk_client_username primary key (username),
+    constraint fk_client_club_id foreign key (club_id) references club (id)
 );
 
 drop table if exists questionnaire;

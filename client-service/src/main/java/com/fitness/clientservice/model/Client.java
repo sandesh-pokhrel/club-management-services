@@ -75,6 +75,11 @@ public class Client extends RepresentationModel<Client> {
     @JsonManagedReference
     private ClientGoal clientGoal;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "club_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_client_club_id"))
+    @JsonManagedReference
+    private Club club;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

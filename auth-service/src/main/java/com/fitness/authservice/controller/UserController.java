@@ -9,6 +9,7 @@ import com.fitness.sharedapp.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +38,7 @@ public class UserController {
 
     @GetMapping("/levels")
     @ResponseStatus(HttpStatus.OK)
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<UserLevel> getAllUserLevels() {
         return this.userService.getAllUserLevels();
     }
