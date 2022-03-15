@@ -2,6 +2,7 @@ package com.fitness.clientservice.service;
 
 import com.fitness.clientservice.model.Client;
 import com.fitness.clientservice.model.ClientGoal;
+import com.fitness.clientservice.model.Club;
 import com.fitness.clientservice.repository.ClientGoalRepository;
 import com.fitness.clientservice.repository.ClientRepository;
 import com.fitness.sharedapp.common.Constants;
@@ -28,8 +29,13 @@ public class ClientService extends GenericService {
 
     private final ClientRepository clientRepository;
     private final ClientGoalRepository clientGoalRepository;
+    private final ClubService clubService;
 
-    public Page<Client> getAllClients(Map<String, String> paramMap) {
+    public Page<Client> getAllClients(Map<String, String> paramMap, Integer clubId) {
+        if (Objects.isNull(clubId)) {
+            throw new BadRequestException("Club id is not passed!");
+        }
+        Club club = this.clubService.getById(clubId);
         Integer page = getPageNumber(paramMap);
         String orderBy = getOrderBy(paramMap, "username");
         Sort.Direction order = getOrder(paramMap);
@@ -37,8 +43,8 @@ public class ClientService extends GenericService {
         Pageable pageable = PageRequest.of(page, Constants.PAGE_SIZE,
                 order, orderBy);
         if (Objects.nonNull(search))
-            return this.clientRepository.search(search, pageable);
-        return this.clientRepository.findAll(pageable);
+            return this.clientRepository.search(search, club, pageable);
+        return this.clientRepository.findAllByClub(club, pageable);
     }
 
     public List<String> getAllClientUsernames() {

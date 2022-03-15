@@ -28,6 +28,7 @@ public class User {
     private String cellPhone;
     private Double customRate;
     private Double groupCustomRate;
+    private Integer clubId;
 
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "users")
     @JsonManagedReference

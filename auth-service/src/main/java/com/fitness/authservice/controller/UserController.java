@@ -1,5 +1,6 @@
 package com.fitness.authservice.controller;
 
+import com.fitness.authservice.model.Role;
 import com.fitness.authservice.model.User;
 import com.fitness.authservice.model.UserLevel;
 import com.fitness.authservice.request.ChangeLogin;
@@ -9,12 +10,13 @@ import com.fitness.sharedapp.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/users")
@@ -72,5 +74,26 @@ public class UserController {
 
         user.setPassword(passwordEncoder.encode(login.getNewPassword()));
         userService.saveUser(user, "EDIT");
+    }
+
+    @GetMapping("/club-validate")
+    @ResponseStatus(HttpStatus.OK)
+    public Map<String, Boolean> validateClubForUser(@RequestParam String username, @RequestParam Integer clubId) {
+        Map<String, Boolean> resultMap = new HashMap<>();
+        User user = this.userService.getByUsername(username);
+        if (Objects.isNull(user)) {
+            resultMap.put("result", false);
+            return resultMap;
+        }
+        if (user.getRoles().size() > 0) {
+            Role role = user.getRoles().stream().filter(r -> r.getName().equals("ROLE_ADMIN")).findFirst().orElse(null);
+            if (Objects.nonNull(role)) {
+                resultMap.put("result", true);
+                return resultMap;
+            }
+        }
+        if (Objects.equals(user.getClubId(), clubId)) resultMap.put("result", true);
+        else resultMap.put("result", false);
+        return resultMap;
     }
 }

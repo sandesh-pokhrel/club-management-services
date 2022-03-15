@@ -108,7 +108,9 @@ create table auth_user
     level             integer not null,
     custom_rate       double,
     group_custom_rate double,
+    club_id           integer not null,
     constraint pk_auth_user_username primary key (username),
+    constraint fk_auth_user_club_id foreign key (club_id) references club_management_clients.club (id),
     constraint fk_auth_user_level
         foreign key (level) references user_level (id)
 );

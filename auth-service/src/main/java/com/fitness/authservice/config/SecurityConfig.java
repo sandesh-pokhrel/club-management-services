@@ -35,6 +35,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers(HttpMethod.GET,"/users/**");
+        web.ignoring()
+                .antMatchers(HttpMethod.GET,"/users/**")
+                .antMatchers(HttpMethod.GET, "/users/club-validate");
     }
 }

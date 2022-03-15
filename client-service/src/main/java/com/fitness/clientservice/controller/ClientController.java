@@ -36,8 +36,9 @@ public class ClientController {
     @ResponseStatus(value = HttpStatus.OK)
     @ApiOperation(value = "Fetches all the client from database")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "OK")})
-    public ResponseEntity<Page<Client>> getAllClients(@RequestParam Map<String, String> paramMap) {
-        Page<Client> clientsPage = this.clientService.getAllClients(paramMap);
+    public ResponseEntity<Page<Client>> getAllClients(@RequestParam Map<String, String> paramMap
+            , @RequestHeader("Club-Id") Integer clubId) {
+        Page<Client> clientsPage = this.clientService.getAllClients(paramMap, clubId);
         clientsPage.getContent().forEach(client -> client.add(linkTo(methodOn(ClientController.class)
                 .getClientByUsername(client.getUsername())).withSelfRel()));
         return ResponseEntity.ok(clientsPage);
