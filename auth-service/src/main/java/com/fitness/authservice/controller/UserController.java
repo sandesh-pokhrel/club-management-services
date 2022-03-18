@@ -83,16 +83,19 @@ public class UserController {
     @GetMapping("/club-validate")
     @ResponseStatus(HttpStatus.OK)
     public Map<String, Object> validateClubForUser(@RequestParam String username, @RequestParam Integer clubId) {
+        Role role = null;
         Map<String, Object> resultMap = new HashMap<>();
         User user = this.userService.getByUsername(username);
         if (Objects.isNull(user)) {
             resultMap.put("result", false);
+            return resultMap;
         } else if (user.getRoles().size() > 0) {
-            Role role = user.getRoles().stream().filter(r -> r.getName().equals("ROLE_ADMIN")).findFirst().orElse(null);
+            role = user.getRoles().stream().filter(r -> r.getName().equals("ROLE_ADMIN")).findFirst().orElse(null);
             if (Objects.nonNull(role)) {
                 resultMap.put("result", true);
             }
-        } else {
+        }
+        if (Objects.isNull(role)){
             if (Objects.equals(user.getClubId(), clubId)) resultMap.put("result", true);
             else resultMap.put("result", false);
         }
