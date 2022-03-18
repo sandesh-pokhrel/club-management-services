@@ -3,6 +3,7 @@ package com.fitness.purchaseservice.repository;
 import com.fitness.purchaseservice.model.PurchaseSubCategory;
 import com.fitness.purchaseservice.model.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,10 +11,6 @@ import java.util.Optional;
 
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
-
-    Long countByClientUsernameAndPurchaseSubCategory(String username, PurchaseSubCategory purchaseSubCategory);
-
-    Long countByClientUsernameAndPurchaseSubCategoryAndRecurrenceRuleIsNull(String username, PurchaseSubCategory purchaseSubCategory);
 
     Long countByClientUsernameAndPurchaseSubCategoryAndStatusNotInAndRecurrenceRuleIsNull(String username,
                                                                                           PurchaseSubCategory purchaseSubCategory,
@@ -33,4 +30,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
     List<Schedule> findAllByClientUsername(String username);
 
     List<Schedule> findAllByTrainerUsername(String username);
+
+    @Query(value = "select * from schedule s join club_management_clients.client cc " +
+            "on s.client_username = cc.username where cc.club_id = :clubId", nativeQuery = true)
+    List<Schedule> customFindAllByClubId(Integer clubId);
 }

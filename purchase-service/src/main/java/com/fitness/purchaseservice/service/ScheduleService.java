@@ -56,17 +56,11 @@ public class ScheduleService {
                 .orElseThrow(() -> new BadRequestException("Schedule not found!"));
     }
 
-    public List<Schedule> getAllSchedules() {
-        return this.scheduleRepository.findAll();
-    }
-
-    public List<Schedule> getAllSchedulesByPurchase(Integer purchaseId) {
-        return this.scheduleRepository.findAllByPurchaseId(purchaseId);
+    public List<Schedule> getAllSchedules(Integer clubId) {
+        return this.scheduleRepository.customFindAllByClubId(clubId);
     }
 
     public Schedule saveSchedule(Schedule schedule, String mode, boolean isRecurrent) {
-//        if (mode.equalsIgnoreCase("EDIT"))
-//            schedule.setPurchaseSubCategory(this.scheduleRepository.findById(schedule.getId()).get().getPurchaseSubCategory());
         ClientPurchase clientPurchase = this.clientPurchaseRepository
                 .findByClientUsernameAndPurchaseSubCategoryAndApptScheduledNot(schedule.getClientUsername(), schedule.getPurchaseSubCategory(), -1);
         if (mode.equalsIgnoreCase("CREATE")) {
