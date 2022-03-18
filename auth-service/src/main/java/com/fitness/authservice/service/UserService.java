@@ -32,10 +32,11 @@ public class UserService extends GenericService implements UserDetailsService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public User saveUser(User user, String mode) {
+    public User saveUser(User user, String mode, Integer clubId) {
         if (mode.equals("CREATE") && userRepository.existsByUsernameOrEmail(user.getUsername(), user.getEmail()))
             throw new RuntimeException("Username or Email already exists!");
         if (mode.equals("CREATE")) {
+            user.setClubId(clubId);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setRoles(Collections.singletonList(roleRepository.findByNameContaining("USER")));
         } else

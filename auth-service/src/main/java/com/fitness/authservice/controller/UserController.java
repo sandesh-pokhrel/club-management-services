@@ -31,8 +31,10 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User save(@RequestBody User user, @RequestParam String mode) {
-        return this.userService.saveUser(user, mode);
+    public User save(@RequestBody User user,
+                     @RequestParam String mode,
+                     @RequestHeader("Club-Id") Integer clubId) {
+        return this.userService.saveUser(user, mode, clubId);
     }
 
     @GetMapping
@@ -77,7 +79,7 @@ public class UserController {
             throw new BadRequestException("Old and new password cannot be same!");
 
         user.setPassword(passwordEncoder.encode(login.getNewPassword()));
-        userService.saveUser(user, "EDIT");
+        userService.saveUser(user, "EDIT", null);
     }
 
     @GetMapping("/club-validate")

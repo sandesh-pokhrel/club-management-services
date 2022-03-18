@@ -59,8 +59,9 @@ public class ClientService extends GenericService {
         return this.clientRepository.findById(username).orElse(null);
     }
 
-    public Client saveClient(Client client) {
+    public Client saveClient(Client client, Integer clubId) {
         String username = client.getUsername();
+        Club club;
         if (this.clientRepository.existsById(username)) {
             int randomNumber = new Random().nextInt(900) + 100;
             client.setUsername(client.getUsername()+randomNumber);
@@ -68,6 +69,8 @@ public class ClientService extends GenericService {
             throw new AlreadyExistsException("Cellphone already exists!");
         else if (this.clientRepository.existsByEmail(client.getEmail()))
             throw new AlreadyExistsException("Email already exists!");
+        club = this.clubService.getById(clubId);
+        client.setClub(club);
         return this.clientRepository.save(client);
     }
 

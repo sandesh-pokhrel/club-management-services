@@ -78,8 +78,9 @@ public class ClientController {
     @ApiOperation(value = "Saves the client after validation")
     @ApiResponses(value = {@ApiResponse(code = 201, message = "Client added"),
             @ApiResponse(code = 400, message = "Client already exists")})
-    public Client saveClient(@Valid @RequestBody Client client) {
-        return this.clientService.saveClient(client);
+    public Client saveClient(@Valid @RequestBody Client client,
+                             @RequestHeader("Club-Id") Integer clubId) {
+        return this.clientService.saveClient(client, clubId);
     }
 
     @PutMapping("/{username}")
