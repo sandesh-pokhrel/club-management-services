@@ -1,5 +1,7 @@
 package com.fitness.authservice.controller;
 
+import com.fitness.authservice.feign.ClubFeignClient;
+import com.fitness.authservice.model.Club;
 import com.fitness.authservice.model.Role;
 import com.fitness.authservice.model.User;
 import com.fitness.authservice.model.UserLevel;
@@ -25,6 +27,7 @@ public class UserController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final ClubFeignClient clubFeignClient;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -78,22 +81,21 @@ public class UserController {
 
     @GetMapping("/club-validate")
     @ResponseStatus(HttpStatus.OK)
-    public Map<String, Boolean> validateClubForUser(@RequestParam String username, @RequestParam Integer clubId) {
-        Map<String, Boolean> resultMap = new HashMap<>();
+    public Map<String, Object> validateClubForUser(@RequestParam String username, @RequestParam Integer clubId) {
+        Map<String, Object> resultMap = new HashMap<>();
         User user = this.userService.getByUsername(username);
         if (Objects.isNull(user)) {
             resultMap.put("result", false);
-            return resultMap;
-        }
-        if (user.getRoles().size() > 0) {
+        } else if (user.getRoles().size() > 0) {
             Role role = user.getRoles().stream().filter(r -> r.getName().equals("ROLE_ADMIN")).findFirst().orElse(null);
             if (Objects.nonNull(role)) {
                 resultMap.put("result", true);
-                return resultMap;
             }
+        } else {
+            if (Objects.equals(user.getClubId(), clubId)) resultMap.put("result", true);
+            else resultMap.put("result", false);
         }
-        if (Objects.equals(user.getClubId(), clubId)) resultMap.put("result", true);
-        else resultMap.put("result", false);
+        resultMap.put("club", clubFeignClient.getClub(clubId));
         return resultMap;
     }
 }

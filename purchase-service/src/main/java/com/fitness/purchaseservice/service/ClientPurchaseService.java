@@ -61,7 +61,7 @@ public class ClientPurchaseService extends GenericService {
         return this.clientPurchaseRepository.findById(id).orElseThrow(() -> new NotFoundException("Client purchase not found!"));
     }
 
-    public Page<ClientPurchase> getAllPurchases(Map<String, String> paramMap) {
+    public Page<ClientPurchase> getAllPurchases(Map<String, String> paramMap, Integer clubId) {
         Integer page = getPageNumber(paramMap);
         String orderBy = getOrderBy(paramMap, "clientUsername");
         Sort.Direction order = getOrder(paramMap);
@@ -69,8 +69,8 @@ public class ClientPurchaseService extends GenericService {
         Pageable pageable = PageRequest.of(page, Constants.PAGE_SIZE,
                 order, orderBy);
         if (Objects.nonNull(search))
-            return this.clientPurchaseRepository.search(search, pageable);
-        return this.clientPurchaseRepository.findAll(pageable);
+            return this.clientPurchaseRepository.search(search, clubId, pageable);
+        return this.clientPurchaseRepository.customFindAllByClubId(clubId, pageable);
     }
 
     public List<ClientPurchase> getAllPurchasesForClient(String username) {

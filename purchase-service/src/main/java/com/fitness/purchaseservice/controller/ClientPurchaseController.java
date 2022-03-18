@@ -22,10 +22,11 @@ public class ClientPurchaseController {
     private final ScheduleService scheduleService;
 
     @GetMapping
-    public Map<String, Object> getAllClientPurchase(@RequestParam Map<String, String> paramMap) {
+    public Map<String, Object> getAllClientPurchase(@RequestParam Map<String, String> paramMap,
+                                                    @RequestHeader("Club-Id") Integer clubId) {
         Map<String, Object> result = new HashMap<>();
         List<Map<String, Long>> statList = new ArrayList<>();
-        Page<ClientPurchase> purchases = this.clientPurchaseService.getAllPurchases(paramMap);
+        Page<ClientPurchase> purchases = this.clientPurchaseService.getAllPurchases(paramMap, clubId);
         List<ClientPurchase> clientPurchases = purchases.getContent();
         clientPurchases.forEach(clientPurchase -> statList.add(this.scheduleService.getTotalScheduled(clientPurchase.getId())));
         result.put("purchases", purchases);
