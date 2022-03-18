@@ -14,11 +14,13 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     boolean existsByUsernameOrEmail(String username, String email);
 
-    @Query("select u.username from User u")
-    List<String> getOnlyUsernames();
+    @Query("select u.username from User u where u.clubId = ?1")
+    List<String> getOnlyUsernames(Integer clubId);
+
+    Page<User> findAllByClubId(Integer clubId, Pageable pageable);
 
     @Query("SELECT u FROM User u " +
-            "WHERE lower(u.username) like %:searchText% OR lower(u.firstName) like %:searchText% OR " +
-            "lower(u.lastName) like %:searchText% OR lower(u.email) like %:searchText%")
-    Page<User> search(String searchText, Pageable pageable);
+            "WHERE u.clubId = :clubId AND (lower(u.username) like %:searchText% OR lower(u.firstName) like %:searchText% OR " +
+            "lower(u.lastName) like %:searchText% OR lower(u.email) like %:searchText%)")
+    Page<User> search(String searchText, Integer clubId, Pageable pageable);
 }

@@ -46,8 +46,8 @@ public class ClientController {
 
     @GetMapping("/usernames")
     @ResponseStatus(HttpStatus.OK)
-    public List<String> getAllClientUsernames() {
-        return this.clientService.getAllClientUsernames();
+    public List<String> getAllClientUsernames(@RequestHeader("Club-Id") Integer clubId) {
+        return this.clientService.getAllClientUsernames(clubId);
     }
 
     @GetMapping("/username-concat-fullname/{username}")

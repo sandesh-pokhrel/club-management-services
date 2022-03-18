@@ -24,8 +24,8 @@ public interface ClientRepository extends JpaRepository<Client, String> {
     boolean existsByCellPhoneAndUsernameNot(String cellPhone, String username);
 
     @Query("select concat(concat(concat(concat(concat(c.firstName, ' '), c.lastName), '  ('), c.username), ')')  " +
-            "from Client c order by c.firstName, c.lastName")
-    List<String> getAllClientUsernames();
+            "from Client c where c.club = :club order by c.firstName, c.lastName")
+    List<String> getAllClientUsernames(Club club);
 
     @Query("select concat(concat(concat(concat(concat(c.firstName, ' '), c.lastName), '  ('), c.username), ')')  " +
             "from Client c where c.username = ?1 order by c.firstName, c.lastName")

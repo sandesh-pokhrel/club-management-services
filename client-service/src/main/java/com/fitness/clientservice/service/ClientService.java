@@ -47,8 +47,8 @@ public class ClientService extends GenericService {
         return this.clientRepository.findAllByClub(club, pageable);
     }
 
-    public List<String> getAllClientUsernames() {
-        return this.clientRepository.getAllClientUsernames();
+    public List<String> getAllClientUsernames(Integer clubId) {
+        return this.clientRepository.getAllClientUsernames(clubService.getById(clubId));
     }
 
     public String getClientUsernameConcatFullNameByUsername(String username) {

@@ -37,8 +37,9 @@ public class UserController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Page<User> getAllUsers(@RequestParam Map<String, String> paramMap) {
-        return this.userService.getAllUsers(paramMap);
+    public Page<User> getAllUsers(@RequestParam Map<String, String> paramMap,
+                                  @RequestHeader("Club-Id") Integer clubId) {
+        return this.userService.getAllUsers(paramMap, clubId);
     }
 
     @GetMapping("/levels")
@@ -50,8 +51,8 @@ public class UserController {
 
     @GetMapping("/usernames")
     @ResponseStatus(HttpStatus.OK)
-    public List<String> getAllUsernames() {
-        return this.userService.getAllUsernames();
+    public List<String> getAllUsernames(@RequestHeader("Club-Id") Integer clubId) {
+        return this.userService.getAllUsernames(clubId);
     }
 
     @GetMapping("/{username}")
