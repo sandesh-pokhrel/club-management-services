@@ -1,7 +1,6 @@
 package com.fitness.clientservice.request.mapper;
 
 import com.fitness.clientservice.model.ClientQuestionnaire;
-import com.fitness.clientservice.model.Questionnaire;
 import com.fitness.clientservice.request.ClientQuestionnaireRequest;
 import com.fitness.clientservice.service.QuestionnaireService;
 import org.mapstruct.Mapper;

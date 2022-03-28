@@ -1,5 +1,8 @@
 package com.fitness.authservice.controller;
 
+import com.fitness.authservice.feign.ClubFeignClient;
+import com.fitness.authservice.model.Club;
+import com.fitness.authservice.model.Role;
 import com.fitness.authservice.model.User;
 import com.fitness.authservice.model.UserLevel;
 import com.fitness.authservice.request.ChangeLogin;
@@ -12,8 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/users")
@@ -22,29 +27,34 @@ public class UserController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final ClubFeignClient clubFeignClient;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User save(@RequestBody User user, @RequestParam String mode) {
-        return this.userService.saveUser(user, mode);
+    public User save(@RequestBody User user,
+                     @RequestParam String mode,
+                     @RequestHeader("Club-Id") Integer clubId) {
+        return this.userService.saveUser(user, mode, clubId);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Page<User> getAllUsers(@RequestParam Map<String, String> paramMap) {
-        return this.userService.getAllUsers(paramMap);
+    public Page<User> getAllUsers(@RequestParam Map<String, String> paramMap,
+                                  @RequestHeader("Club-Id") Integer clubId) {
+        return this.userService.getAllUsers(paramMap, clubId);
     }
 
     @GetMapping("/levels")
     @ResponseStatus(HttpStatus.OK)
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<UserLevel> getAllUserLevels() {
         return this.userService.getAllUserLevels();
     }
 
     @GetMapping("/usernames")
     @ResponseStatus(HttpStatus.OK)
-    public List<String> getAllUsernames() {
-        return this.userService.getAllUsernames();
+    public List<String> getAllUsernames(@RequestHeader("Club-Id") Integer clubId) {
+        return this.userService.getAllUsernames(clubId);
     }
 
     @GetMapping("/{username}")
@@ -69,6 +79,29 @@ public class UserController {
             throw new BadRequestException("Old and new password cannot be same!");
 
         user.setPassword(passwordEncoder.encode(login.getNewPassword()));
-        userService.saveUser(user, "EDIT");
+        userService.saveUser(user, "EDIT", null);
+    }
+
+    @GetMapping("/club-validate")
+    @ResponseStatus(HttpStatus.OK)
+    public Map<String, Object> validateClubForUser(@RequestParam String username, @RequestParam Integer clubId) {
+        Role role = null;
+        Map<String, Object> resultMap = new HashMap<>();
+        User user = this.userService.getByUsername(username);
+        if (Objects.isNull(user)) {
+            resultMap.put("result", false);
+            return resultMap;
+        } else if (user.getRoles().size() > 0) {
+            role = user.getRoles().stream().filter(r -> r.getName().equals("ROLE_ADMIN")).findFirst().orElse(null);
+            if (Objects.nonNull(role)) {
+                resultMap.put("result", true);
+            }
+        }
+        if (Objects.isNull(role)){
+            if (Objects.equals(user.getClubId(), clubId)) resultMap.put("result", true);
+            else resultMap.put("result", false);
+        }
+        resultMap.put("club", clubFeignClient.getClub(clubId));
+        return resultMap;
     }
 }

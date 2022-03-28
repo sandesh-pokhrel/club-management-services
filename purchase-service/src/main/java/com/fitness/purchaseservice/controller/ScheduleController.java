@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -21,8 +22,8 @@ public class ScheduleController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Schedule> getAllSchedules() {
-        return this.scheduleService.getAllSchedules();
+    public List<Schedule> getAllSchedules(@RequestParam("club-id") Integer clubId) {
+        return this.scheduleService.getAllSchedules(clubId);
     }
 
     @PostMapping
@@ -54,5 +55,29 @@ public class ScheduleController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteSchedule(@PathVariable Integer id) {
         this.scheduleService.deleteSchedule(id);
+    }
+
+    @GetMapping("/appointment-stat/{purchaseId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Map<String, Long> getScheduleStatForPurchase(@PathVariable Integer purchaseId) {
+        return this.scheduleService.getTotalScheduledAndCompleted(purchaseId);
+    }
+
+    @GetMapping("/agenda/purchase/{purchaseId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Schedule> getAgendaSchedulesByPurchase(@PathVariable Integer purchaseId) {
+        return this.scheduleService.getAgendaSchedulesByPurchase(purchaseId);
+    }
+
+    @GetMapping("/agenda/client/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Schedule> getAgendaSchedulesByClient(@PathVariable String username) {
+        return this.scheduleService.getAgendaSchedulesByClient(username);
+    }
+
+    @GetMapping("/agenda/trainer/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Schedule> getAgendaSchedulesByTrainer(@PathVariable String username) {
+        return this.scheduleService.getAgendaSchedulesByTrainer(username);
     }
 }

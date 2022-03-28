@@ -33,6 +33,10 @@ public class QuestionnaireService extends GenericService {
         this.clientQuestionnaireRepository.saveAllAndFlush(clientQuestionnaires);
     }
 
+    public Questionnaire saveQuestion(Questionnaire questionnaire) {
+        return this.questionnaireRepository.save(questionnaire);
+    }
+
     public List<ClientQuestionnaire> getAllClientAnsers(String clientUsername) {
         return this.clientQuestionnaireRepository.findAllByClientUsername(clientUsername);
     }

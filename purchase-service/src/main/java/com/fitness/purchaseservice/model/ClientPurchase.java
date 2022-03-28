@@ -30,6 +30,7 @@ public class ClientPurchase {
     private Double initialDownpayment;
     private Integer noOfPostdates;
     private String paymentInterval;
+    @Temporal(TemporalType.DATE)
     private Date firstPostdate;
     private Integer apptScheduled;
     private Date purchaseDate;

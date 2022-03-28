@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -22,16 +21,16 @@ public class ClientAssessmentService {
         return this.clientAssessmentRepository.findById(id).orElse(null);
     }
 
-    public List<ClientAssessment> getAllAssessmentsForClient(String username) {
-        Client client = this.clientService.getClientByUsername(username);
-        if (Objects.isNull(client)) throw new NotFoundException("Client not found");
-        return this.clientAssessmentRepository.findAllByClient(client);
+    public void deleteAssessmentById(Integer id) {
+        this.clientAssessmentRepository.deleteById(id);
     }
 
-    public ClientAssessment saveClientAssessment(ClientAssessment clientAssessment, String username) {
-        Client client = this.clientService.getClientByUsername(username);
+    public ClientAssessment saveClientAssessment(ClientAssessment clientAssessment,
+                                                 String clientUsername,
+                                                 String trainerUsername) {
+        Client client = this.clientService.getClientByUsername(clientUsername);
         if (Objects.isNull(client)) throw new NotFoundException("Client not found");
-        clientAssessment.setTrainerUsername("sandesh");
+        clientAssessment.setTrainerUsername(trainerUsername);
         clientAssessment.setClient(client);
         clientAssessment.setAssessmentDate(new Date());
         return this.clientAssessmentRepository.save(clientAssessment);

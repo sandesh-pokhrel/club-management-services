@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -32,6 +33,12 @@ public class ClientNoteController {
         if (Objects.isNull(clientNote.getClient()) || Objects.isNull(clientNote.getTrainerUsername()))
             throw new NotFoundException("Client or Trainer not found for the given request");
         return this.clientNoteService.saveNote(clientNote);
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateClientNote(@PathVariable Integer id, @RequestBody Map<String, String> note) {
+        this.clientNoteService.updateNote(id, note.get("note"));
     }
 
     @DeleteMapping("/{id}")

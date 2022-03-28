@@ -32,10 +32,11 @@ public class UserService extends GenericService implements UserDetailsService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public User saveUser(User user, String mode) {
+    public User saveUser(User user, String mode, Integer clubId) {
         if (mode.equals("CREATE") && userRepository.existsByUsernameOrEmail(user.getUsername(), user.getEmail()))
             throw new RuntimeException("Username or Email already exists!");
         if (mode.equals("CREATE")) {
+            user.setClubId(clubId);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setRoles(Collections.singletonList(roleRepository.findByNameContaining("USER")));
         } else
@@ -44,11 +45,11 @@ public class UserService extends GenericService implements UserDetailsService {
         return this.userRepository.save(user);
     }
 
-    public List<String> getAllUsernames() {
-        return this.userRepository.getOnlyUsernames();
+    public List<String> getAllUsernames(Integer clubId) {
+        return this.userRepository.getOnlyUsernames(clubId);
     }
 
-    public Page<User> getAllUsers(Map<String, String> paramMap) {
+    public Page<User> getAllUsers(Map<String, String> paramMap, Integer clubId) {
         Integer page = getPageNumber(paramMap);
         String orderBy = getOrderBy(paramMap, "username");
         Sort.Direction order = getOrder(paramMap);
@@ -56,8 +57,8 @@ public class UserService extends GenericService implements UserDetailsService {
         Pageable pageable = PageRequest.of(page, Constants.PAGE_SIZE,
                 order, orderBy);
         if (Objects.nonNull(search))
-            return this.userRepository.search(search, pageable);
-        return this.userRepository.findAll(pageable);
+            return this.userRepository.search(search, clubId, pageable);
+        return this.userRepository.findAllByClubId(clubId, pageable);
     }
 
     public User getByUsername(String username) {

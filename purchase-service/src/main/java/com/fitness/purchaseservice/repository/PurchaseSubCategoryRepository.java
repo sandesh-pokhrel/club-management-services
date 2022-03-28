@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PurchaseSubCategoryRepository extends JpaRepository<PurchaseSubCategory, Integer> {
+
+    boolean existsById(Integer id);
 }

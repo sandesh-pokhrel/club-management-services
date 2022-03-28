@@ -21,6 +21,10 @@ public class ClientNoteService {
         return this.clientNoteRepository.save(clientNote);
     }
 
+    public void updateNote(Integer noteId, String note) {
+        this.clientNoteRepository.updateNoteById(noteId, note);
+    }
+
     public void deleteNote(Integer id) {
         this.clientNoteRepository.delete(getNoteById(id));
     }

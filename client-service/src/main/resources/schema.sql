@@ -2,6 +2,15 @@ drop database if exists club_management_clients;
 create database club_management_clients;
 use club_management_clients;
 
+drop table if exists club;
+create table club
+(
+    id       integer      not null auto_increment,
+    name     varchar(500) not null,
+    location varchar(100) not null,
+    constraint pk_club_id primary key (id)
+);
+
 drop table if exists client;
 create table client
 (
@@ -21,7 +30,9 @@ create table client
     province                varchar(100),
     postal_code             integer,
     is_prospect             boolean,
-    constraint pk_client_username primary key (username)
+    club_id                 integer     not null,
+    constraint pk_client_username primary key (username),
+    constraint fk_client_club_id foreign key (club_id) references club (id)
 );
 
 drop table if exists questionnaire;
@@ -110,6 +121,23 @@ create table client_assessment
     constraint fk_client_assessment_clusername foreign key (client_username) references client (username),
     constraint fk_client_assessment_trusername foreign key (trainer_username)
         references club_management_auth.auth_user (username)
+);
+
+drop table if exists client_goal;
+create table client_goal
+(
+    id              integer      not null auto_increment,
+    client_username varchar(100) not null,
+    first_goal      varchar(500),
+    second_goal     varchar(500),
+    third_goal      varchar(500),
+    first_obstacle  varchar(500),
+    second_obstacle varchar(500),
+    third_obstacle  varchar(500),
+    prescription    varchar(3000),
+    objection       varchar(500),
+    constraint pk_client_goals_id primary key (id),
+    constraint fk_client_goals_clusername foreign key (client_username) references client (username)
 );
 
 drop view if exists user;

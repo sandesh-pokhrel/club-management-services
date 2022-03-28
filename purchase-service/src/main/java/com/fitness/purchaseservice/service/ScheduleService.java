@@ -6,12 +6,16 @@ import com.fitness.purchaseservice.model.ScheduleEditMode;
 import com.fitness.purchaseservice.repository.ClientPurchaseRepository;
 import com.fitness.purchaseservice.repository.ScheduleRepository;
 import com.fitness.purchaseservice.util.ScheduleRecurrenceUtil;
+import com.fitness.sharedapp.common.Constants;
 import com.fitness.sharedapp.exception.BadRequestException;
 import com.fitness.sharedapp.exception.NotFoundException;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
@@ -36,8 +40,10 @@ public class ScheduleService {
     }
 
     private void setReadOnlyBehaviorOnEdit(Schedule schedule, ClientPurchase clientPurchase) {
-        schedule.setIsReadOnly(schedule.getStatus().equalsIgnoreCase("completed"));
-        if (schedule.getStatus().equalsIgnoreCase("completed")) {
+        if (StringUtils.equalsAnyIgnoreCase(schedule.getStatus(), Constants.READ_ONLY_ALIKE_SCHEDULE_STATUS)) {
+            schedule.setIsReadOnly(true);
+        }
+        if (StringUtils.equalsAnyIgnoreCase(schedule.getStatus(), Constants.COMPLETED_ALIKE_SCHEDULE_STATUS)) {
             Long totalCompletedSchedule = this.scheduleRepository.
                     countByClientUsernameAndPurchaseSubCategoryAndStatusIgnoreCase(schedule.getClientUsername(), schedule.getPurchaseSubCategory(), "COMPLETED");
             if (++totalCompletedSchedule == clientPurchase.getAppts().longValue())
@@ -50,13 +56,11 @@ public class ScheduleService {
                 .orElseThrow(() -> new BadRequestException("Schedule not found!"));
     }
 
-    public List<Schedule> getAllSchedules() {
-        return this.scheduleRepository.findAll();
+    public List<Schedule> getAllSchedules(Integer clubId) {
+        return this.scheduleRepository.customFindAllByClubId(clubId);
     }
 
     public Schedule saveSchedule(Schedule schedule, String mode, boolean isRecurrent) {
-//        if (mode.equalsIgnoreCase("EDIT"))
-//            schedule.setPurchaseSubCategory(this.scheduleRepository.findById(schedule.getId()).get().getPurchaseSubCategory());
         ClientPurchase clientPurchase = this.clientPurchaseRepository
                 .findByClientUsernameAndPurchaseSubCategoryAndApptScheduledNot(schedule.getClientUsername(), schedule.getPurchaseSubCategory(), -1);
         if (mode.equalsIgnoreCase("CREATE")) {
@@ -73,7 +77,7 @@ public class ScheduleService {
                 // Passed schedule is not an edited instance of a series
                 if (Objects.isNull(schedule.getRecurrenceId())) {
                     // Does not allow completing whole series at once
-                    if (schedule.getStatus().equalsIgnoreCase("completed"))
+                    if (StringUtils.equalsAnyIgnoreCase(schedule.getStatus(), Constants.READ_ONLY_ALIKE_SCHEDULE_STATUS))
                         throw new BadRequestException("Cannot mark whole appointment series as completed");
                     // Schedule to edit is already a recurrence schedule
                     if (Objects.nonNull(scheduleFromDb.getRecurrenceRule())) {
@@ -102,12 +106,19 @@ public class ScheduleService {
                     setReadOnlyBehaviorOnEdit(schedule, clientPurchase);
                     if (Objects.isNull(editedScheduleInDb)) schedule.setId(null);
                     else schedule.setId(editedScheduleInDb.getId());
+                    if (StringUtils.equalsAnyIgnoreCase(schedule.getStatus(), Constants.DELETED_ALIKE_SCHEDULE_STATUS)) {
+                        Integer deletedCount = scheduleFromDb.getDeletedCount();
+                        if (Objects.isNull(deletedCount) || deletedCount == 0)
+                            scheduleFromDb.setDeletedCount(1);
+                        else scheduleFromDb.setDeletedCount(scheduleFromDb.getDeletedCount() + 1);
+                    }
                     this.scheduleRepository.save(scheduleFromDb);
                 }
             } else {
                 setReadOnlyBehaviorOnEdit(schedule, clientPurchase);
             }
         }
+        schedule.setPurchaseId(clientPurchase.getId());
         return this.scheduleRepository.save(schedule);
     }
 
@@ -137,5 +148,44 @@ public class ScheduleService {
             schedule.setDeletedCount(1);
         }
         this.scheduleRepository.save(schedule);
+    }
+
+    public Map<String, Long> getTotalScheduledAndCompleted(Integer id) {
+        Map<String, Long> apptStatsMap = new HashMap<>();
+        List<Schedule> schedules = this.scheduleRepository.findAllByPurchaseId(id);
+        Long totalScheduled = this.scheduleRecurrenceUtil.getScheduledAppointmentsForSchedules(schedules);
+        Long totalCompleted = this.scheduleRecurrenceUtil.getCompletedAppointmentsForSchedules(schedules);
+        Long totalNoCharged = this.scheduleRecurrenceUtil.getNoChargeAppointmentsForSchedules(schedules);
+        Long totalCharged = this.scheduleRecurrenceUtil.getChargeAppointmentsForSchedules(schedules);
+        Long totalCancelled = this.scheduleRecurrenceUtil.getCancelledAppointmentsForSchedules(schedules);
+        apptStatsMap.put("scheduled", totalScheduled);
+        apptStatsMap.put("completed", totalCompleted);
+        apptStatsMap.put("cancelled", totalCancelled);
+        apptStatsMap.put("charged", totalCharged);
+        apptStatsMap.put("no_charged", totalNoCharged);
+        return apptStatsMap;
+    }
+
+    public Map<String, Long> getTotalScheduled(Integer id) {
+        Map<String, Long> apptStatsMap = new HashMap<>();
+        List<Schedule> schedules = this.scheduleRepository.findAllByPurchaseId(id);
+        Long totalScheduled = this.scheduleRecurrenceUtil.getScheduledAppointmentsForSchedules(schedules);
+        apptStatsMap.put("scheduled", totalScheduled);
+        return apptStatsMap;
+    }
+
+    public List<Schedule> getAgendaSchedulesByPurchase(Integer purchaseId) {
+        List<Schedule> schedules = this.scheduleRepository.findAllByPurchaseId(purchaseId);
+        return this.scheduleRecurrenceUtil.generateAgendaForSchedules(schedules);
+    }
+
+    public List<Schedule> getAgendaSchedulesByClient(String username) {
+        List<Schedule> schedules = this.scheduleRepository.findAllByClientUsername(username);
+        return this.scheduleRecurrenceUtil.generateAgendaForSchedules(schedules);
+    }
+
+    public List<Schedule> getAgendaSchedulesByTrainer(String username) {
+        List<Schedule> schedules = this.scheduleRepository.findAllByTrainerUsername(username);
+        return this.scheduleRecurrenceUtil.generateAgendaForSchedules(schedules);
     }
 }

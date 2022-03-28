@@ -1,12 +1,17 @@
 package com.fitness.clientservice.service;
 
 import com.fitness.clientservice.model.Client;
+import com.fitness.clientservice.model.ClientGoal;
+import com.fitness.clientservice.model.Club;
+import com.fitness.clientservice.repository.ClientGoalRepository;
 import com.fitness.clientservice.repository.ClientRepository;
 import com.fitness.sharedapp.common.Constants;
 import com.fitness.sharedapp.exception.AlreadyExistsException;
+import com.fitness.sharedapp.exception.BadRequestException;
 import com.fitness.sharedapp.exception.NotFoundException;
 import com.fitness.sharedapp.service.GenericService;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,14 +21,21 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 
 @Service
 @AllArgsConstructor
 public class ClientService extends GenericService {
 
     private final ClientRepository clientRepository;
+    private final ClientGoalRepository clientGoalRepository;
+    private final ClubService clubService;
 
-    public Page<Client> getAllClients(Map<String, String> paramMap) {
+    public Page<Client> getAllClients(Map<String, String> paramMap, Integer clubId) {
+        if (Objects.isNull(clubId)) {
+            throw new BadRequestException("Club id is not passed!");
+        }
+        Club club = this.clubService.getById(clubId);
         Integer page = getPageNumber(paramMap);
         String orderBy = getOrderBy(paramMap, "username");
         Sort.Direction order = getOrder(paramMap);
@@ -31,12 +43,12 @@ public class ClientService extends GenericService {
         Pageable pageable = PageRequest.of(page, Constants.PAGE_SIZE,
                 order, orderBy);
         if (Objects.nonNull(search))
-            return this.clientRepository.search(search, pageable);
-        return this.clientRepository.findAll(pageable);
+            return this.clientRepository.search(search, club, pageable);
+        return this.clientRepository.findAllByClub(club, pageable);
     }
 
-    public List<String> getAllClientUsernames() {
-        return this.clientRepository.getAllClientUsernames();
+    public List<String> getAllClientUsernames(Integer clubId) {
+        return this.clientRepository.getAllClientUsernames(clubService.getById(clubId));
     }
 
     public String getClientUsernameConcatFullNameByUsername(String username) {
@@ -47,14 +59,18 @@ public class ClientService extends GenericService {
         return this.clientRepository.findById(username).orElse(null);
     }
 
-    public Client saveClient(Client client) {
+    public Client saveClient(Client client, Integer clubId) {
         String username = client.getUsername();
-        if (this.clientRepository.existsById(username))
-            throw new AlreadyExistsException(String.format("Username (%s) already exists!", username));
-        else if (this.clientRepository.existsByCellPhone(client.getCellPhone()))
+        Club club;
+        if (this.clientRepository.existsById(username)) {
+            int randomNumber = new Random().nextInt(900) + 100;
+            client.setUsername(client.getUsername()+randomNumber);
+        } else if (this.clientRepository.existsByCellPhone(client.getCellPhone()))
             throw new AlreadyExistsException("Cellphone already exists!");
         else if (this.clientRepository.existsByEmail(client.getEmail()))
             throw new AlreadyExistsException("Email already exists!");
+        club = this.clubService.getById(clubId);
+        client.setClub(club);
         return this.clientRepository.save(client);
     }
 
@@ -66,5 +82,17 @@ public class ClientService extends GenericService {
         else if (this.clientRepository.existsByEmailAndUsernameNot(client.getEmail(), username))
             throw new AlreadyExistsException("Email already exists!");
         return this.clientRepository.save(client);
+    }
+
+    public void deleteClient(String username) {
+        try {
+            this.clientRepository.deleteById(username);
+        } catch (DataIntegrityViolationException ex) {
+            throw new BadRequestException("Client has other associations. Could not delete the client!");
+        }
+    }
+
+    public ClientGoal saveClientGoal(ClientGoal clientGoal) {
+        return this.clientGoalRepository.save(clientGoal);
     }
 }

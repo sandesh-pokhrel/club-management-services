@@ -1,6 +1,7 @@
 package com.fitness.clientservice.service;
 
 import com.fitness.clientservice.model.Client;
+import com.fitness.clientservice.repository.ClientGoalRepository;
 import com.fitness.clientservice.repository.ClientRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,9 +24,12 @@ class ClientServiceTest {
     @Mock
     private ClientRepository clientRepository;
 
+    @Mock
+    private ClientGoalRepository clientGoalRepository;
+
     @BeforeEach
     void setup() {
-        clientService = new ClientService(clientRepository);
+        clientService = new ClientService(clientRepository, clientGoalRepository, null);
     }
 
     @Test
