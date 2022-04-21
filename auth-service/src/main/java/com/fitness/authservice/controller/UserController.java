@@ -9,6 +9,7 @@ import com.fitness.authservice.request.ChangeLogin;
 import com.fitness.authservice.service.UserService;
 import com.fitness.sharedapp.exception.BadRequestException;
 import com.fitness.sharedapp.exception.NotFoundException;
+import feign.FeignException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -88,6 +89,11 @@ public class UserController {
         Role role = null;
         Map<String, Object> resultMap = new HashMap<>();
         User user = this.userService.getByUsername(username);
+        try {
+            this.clubFeignClient.getClub(clubId);
+        } catch (FeignException.NotFound ex) {
+            throw new BadRequestException("Club not found!");
+        }
         if (Objects.isNull(user)) {
             resultMap.put("result", false);
             return resultMap;
