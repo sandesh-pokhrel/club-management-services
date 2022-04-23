@@ -17,5 +17,4 @@ public class Service {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    private Boolean supportsDependent;
 }
