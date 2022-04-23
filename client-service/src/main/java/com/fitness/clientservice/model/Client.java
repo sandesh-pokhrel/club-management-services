@@ -62,6 +62,8 @@ public class Client extends RepresentationModel<Client> {
     private String province;
     private Integer postalCode;
     private Boolean isProspect;
+    private String dependentRelation;
+    private String dependentUsername;
 
     @OneToMany(mappedBy = "client")
     @JsonManagedReference
@@ -79,6 +81,8 @@ public class Client extends RepresentationModel<Client> {
     @JoinColumn(name = "club_id", referencedColumnName = "id", updatable = false,
             foreignKey = @ForeignKey(name = "fk_client_club_id"))
     private Club club;
+
+
 
     @Override
     public boolean equals(Object o) {
