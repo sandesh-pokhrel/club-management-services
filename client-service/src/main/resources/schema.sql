@@ -31,8 +31,11 @@ create table client
     postal_code             integer,
     is_prospect             boolean,
     club_id                 integer     not null,
+    dependent_username varchar(30),
+    dependent_relation varchar(100),
     constraint pk_client_username primary key (username),
-    constraint fk_client_club_id foreign key (club_id) references club (id)
+    constraint fk_client_club_id foreign key (club_id) references club (id),
+    constraint fk_client_dependent_username foreign key (dependent_username) references client(username)
 );
 
 drop table if exists questionnaire;
@@ -43,7 +46,9 @@ create table questionnaire
     input_type varchar(100)                     not null,
     options    varchar(5000),
     enabled    boolean,
-    constraint pk_questionnaire_id primary key (id)
+    service_id integer,
+    constraint pk_questionnaire_id primary key (id),
+    constraint fk_questionnaire_service_id foreign key (service_id) references service(id)
 );
 
 drop table if exists client_questionnaire;
@@ -138,6 +143,14 @@ create table client_goal
     objection       varchar(500),
     constraint pk_client_goals_id primary key (id),
     constraint fk_client_goals_clusername foreign key (client_username) references client (username)
+);
+
+drop table if exists service;
+create table service
+(
+    id                 integer not null auto_increment,
+    name               varchar(200),
+    constraint pk_services_id primary key (id)
 );
 
 drop view if exists user;
