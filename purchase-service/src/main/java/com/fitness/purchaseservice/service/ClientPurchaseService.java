@@ -1,6 +1,7 @@
 package com.fitness.purchaseservice.service;
 
 import com.fitness.purchaseservice.model.ClientPurchase;
+import com.fitness.purchaseservice.model.PurchaseSubCategory;
 import com.fitness.purchaseservice.model.Schedule;
 import com.fitness.purchaseservice.repository.ClientPurchaseRepository;
 import com.fitness.sharedapp.common.Constants;
@@ -84,5 +85,9 @@ public class ClientPurchaseService extends GenericService {
     public ClientPurchase getAllActivePurchasesForClientByPurchaseSubCategory(Schedule schedule) {
         return this.clientPurchaseRepository
                 .findByClientUsernameAndPurchaseSubCategoryAndApptScheduledNot(schedule.getClientUsername(), schedule.getPurchaseSubCategory(), -1);
+    }
+
+    public List<ClientPurchase> getAllPurchasesForClientByPurchaseSubCategory(PurchaseSubCategory purchaseSubCategory) {
+        return this.clientPurchaseRepository.findAllByPurchaseSubCategory(purchaseSubCategory);
     }
 }

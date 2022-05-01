@@ -25,6 +25,8 @@ public interface ClientPurchaseRepository extends JpaRepository<ClientPurchase, 
                                                                                  PurchaseSubCategory purchaseSubCategory,
                                                                                  Integer apptNotEquals);
 
+    List<ClientPurchase> findAllByPurchaseSubCategory(PurchaseSubCategory purchaseSubCategory);
+
     @Query(value = "SELECT * FROM client_purchase cp join club_management_clients.client cc " +
             "on cp.client_username = cc.username where cc.club_id = :clubId " +
             "and (lower(cp.client_username) like %:searchText% or lower(cp.scheduled_by) like %:searchText%)", nativeQuery = true)

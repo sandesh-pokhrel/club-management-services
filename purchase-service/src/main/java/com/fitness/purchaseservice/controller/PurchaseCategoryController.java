@@ -7,6 +7,7 @@ import com.fitness.purchaseservice.service.ClientPurchaseService;
 import com.fitness.purchaseservice.service.PurchaseCategoryService;
 import com.fitness.sharedapp.exception.BadRequestException;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.common.exceptions.InvalidRequestException;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,12 +25,12 @@ public class PurchaseCategoryController {
     private final ClientPurchaseService clientPurchaseService;
 
     @GetMapping
-    public List<PurchaseCategory> getAllPurchases() {
+    public List<PurchaseCategory> getAllPurchaseCategories() {
         return this.purchaseCategoryService.getAllPurchases();
     }
 
     @GetMapping("/categories/{username}")
-    public List<PurchaseSubCategory> getAllSubCategories(@PathVariable String username) {
+    public List<PurchaseSubCategory> getAllSubCategoriesForUser(@PathVariable String username) {
         List<ClientPurchase> allActivePurchasesForClient = this.clientPurchaseService.getAllActivePurchasesForClient(username);
         return allActivePurchasesForClient.stream()
                 .map(ClientPurchase::getPurchaseSubCategory).collect(Collectors.toList());
@@ -44,9 +45,9 @@ public class PurchaseCategoryController {
         return this.purchaseCategoryService.savePurchaseCategory(purchaseCategory);
     }
 
-    @PostMapping("/sub-categories/{categoryId}")
+    @PostMapping("/sub-categories/{category-id}")
     public PurchaseSubCategory savePurchaseSubCategory(@RequestBody PurchaseSubCategory purchaseSubCategory,
-                                                       @PathVariable Integer categoryId) {
+                                                       @PathVariable("category-id") Integer categoryId) {
         if (Objects.isNull(purchaseSubCategory) || Objects.isNull(categoryId))
             throw new BadRequestException("Invalid values provided!");
         PurchaseCategory purchaseCategory = purchaseCategoryService.getPurchaseCategoryById(categoryId);
@@ -54,9 +55,9 @@ public class PurchaseCategoryController {
         return this.purchaseCategoryService.savePurchaseSubCategory(purchaseSubCategory);
     }
 
-    @PutMapping("/sub-categories/{categoryId}")
+    @PutMapping("/sub-categories/{category-id}")
     public PurchaseSubCategory editPurchaseSubCategory(@RequestBody PurchaseSubCategory purchaseSubCategory,
-                                                       @PathVariable Integer categoryId) {
+                                                       @PathVariable("category-id") Integer categoryId) {
         if (Objects.isNull(purchaseSubCategory) || Objects.isNull(categoryId))
             throw new BadRequestException("Invalid values provided!");
         if (Objects.isNull(purchaseSubCategory.getId()) || !purchaseCategoryService.purchaseSubCategoryExists(purchaseSubCategory.getId()))
@@ -64,5 +65,12 @@ public class PurchaseCategoryController {
         PurchaseCategory purchaseCategory = purchaseCategoryService.getPurchaseCategoryById(categoryId);
         purchaseSubCategory.setPurchaseCategory(purchaseCategory);
         return this.purchaseCategoryService.savePurchaseSubCategory(purchaseSubCategory);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deletePurchaseCategory(@PathVariable Integer id) {
+        PurchaseCategory purchaseCategory = purchaseCategoryService.getPurchaseCategoryById(id);
+        this.purchaseCategoryService.deletePurchaseCategory(purchaseCategory);
     }
 }
