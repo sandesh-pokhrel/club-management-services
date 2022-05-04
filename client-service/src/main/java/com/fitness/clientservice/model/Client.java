@@ -50,7 +50,7 @@ public class Client extends RepresentationModel<Client> {
     private Date dob;
 
     @NotBlank(message = "Cell number cannot be blank")
-    @Pattern(regexp="[\\d]{7,20}", message = "Mobile number should contain only numbers of 7-20 characters long")
+    @Pattern(regexp = "[\\d]{7,20}", message = "Mobile number should contain only numbers of 7-20 characters long")
     @Column(nullable = false, unique = true)
     private String cellPhone;
     private String homePhone;
@@ -62,8 +62,11 @@ public class Client extends RepresentationModel<Client> {
     private String province;
     private Integer postalCode;
     private Boolean isProspect;
-    private String dependentRelation;
     private String dependentUsername;
+    private String dependentRelation;
+
+    @Transient
+    private List<Client> family;
 
     @OneToMany(mappedBy = "client")
     @JsonManagedReference
@@ -81,7 +84,6 @@ public class Client extends RepresentationModel<Client> {
     @JoinColumn(name = "club_id", referencedColumnName = "id", updatable = false,
             foreignKey = @ForeignKey(name = "fk_client_club_id"))
     private Club club;
-
 
 
     @Override

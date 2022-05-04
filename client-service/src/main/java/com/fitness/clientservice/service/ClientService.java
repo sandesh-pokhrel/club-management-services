@@ -56,7 +56,11 @@ public class ClientService extends GenericService {
     }
 
     public Client getClientByUsername(String username) {
-        return this.clientRepository.findById(username).orElse(null);
+        Client client = this.clientRepository.findById(username).orElse(null);
+        if (Objects.nonNull(client)) {
+            client.setFamily(this.clientRepository.findAllByDependentUsername(client.getUsername()));
+        }
+        return client;
     }
 
     public Client saveClient(Client client, Integer clubId) {
