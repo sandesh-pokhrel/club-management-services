@@ -31,6 +31,14 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
 
     List<Schedule> findAllByTrainerUsername(String username);
 
+    @Query(value = "select * from schedule s where recurrence_rule is null " +
+            "and date(s.start_time)=current_date", nativeQuery = true)
+    List<Schedule> findAllByTodayNonRecurring();
+
+    @Query(value = "select * from schedule s where recurrence_rule is not null " +
+            "and date(s.start_time)<=current_date and dayofweek(s.start_time) = dayofweek(current_date)", nativeQuery = true)
+    List<Schedule> findAllRecurringByTodayDate();
+
     @Query(value = "select * from schedule s join club_management_clients.client cc " +
             "on s.client_username = cc.username where cc.club_id = :clubId", nativeQuery = true)
     List<Schedule> customFindAllByClubId(Integer clubId);

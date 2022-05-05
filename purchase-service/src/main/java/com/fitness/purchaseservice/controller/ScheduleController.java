@@ -80,4 +80,10 @@ public class ScheduleController {
     public List<Schedule> getAgendaSchedulesByTrainer(@PathVariable String username) {
         return this.scheduleService.getAgendaSchedulesByTrainer(username);
     }
+
+    @GetMapping("/agenda/today")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Schedule> getAgendaSchedulesByToday() {
+        return this.scheduleService.getAgendaSchedulesByToday();
+    }
 }

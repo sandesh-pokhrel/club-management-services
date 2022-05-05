@@ -11,13 +11,12 @@ import com.fitness.sharedapp.exception.BadRequestException;
 import com.fitness.sharedapp.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -187,5 +186,17 @@ public class ScheduleService {
     public List<Schedule> getAgendaSchedulesByTrainer(String username) {
         List<Schedule> schedules = this.scheduleRepository.findAllByTrainerUsername(username);
         return this.scheduleRecurrenceUtil.generateAgendaForSchedules(schedules);
+    }
+
+    public List<Schedule> getAgendaSchedulesByToday() {
+        List<Schedule> finalSchedules = new ArrayList<>();
+        List<Schedule> todayNonRecurringSchedules = this.scheduleRepository.findAllByTodayNonRecurring();
+        List<Schedule> todayRecurringSchedules = this.scheduleRepository.findAllRecurringByTodayDate();
+        finalSchedules.addAll(this.scheduleRecurrenceUtil.generateAgendaForSchedules(todayNonRecurringSchedules));
+        finalSchedules.addAll(this.scheduleRecurrenceUtil.generateAgendaForSchedules(todayRecurringSchedules));
+        finalSchedules = finalSchedules.stream()
+                .filter(schedule -> DateUtils.isSameDay(schedule.getStartTime(), new Date()))
+                .collect(Collectors.toList());
+        return finalSchedules;
     }
 }
