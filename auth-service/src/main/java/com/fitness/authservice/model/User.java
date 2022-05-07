@@ -40,4 +40,8 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "level", referencedColumnName = "id")
     private UserLevel userLevel;
+
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
+    private List<TrainerWorkingHour> trainerWorkingHours;
 }

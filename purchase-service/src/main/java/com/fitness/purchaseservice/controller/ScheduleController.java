@@ -22,8 +22,10 @@ public class ScheduleController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Schedule> getAllSchedules(@RequestParam("club-id") Integer clubId) {
-        return this.scheduleService.getAllSchedules(clubId);
+    public List<Schedule> getAllSchedules(@RequestParam("club-id") Integer clubId,
+                                          @RequestParam("clients") List<String> clients,
+                                          @RequestParam("trainers") List<String> trainers) {
+        return this.scheduleService.getAllSchedulesByClientsAndTrainers(clubId, clients, trainers);
     }
 
     @PostMapping

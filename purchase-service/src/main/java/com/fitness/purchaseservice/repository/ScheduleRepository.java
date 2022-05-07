@@ -42,4 +42,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
     @Query(value = "select * from schedule s join club_management_clients.client cc " +
             "on s.client_username = cc.username where cc.club_id = :clubId", nativeQuery = true)
     List<Schedule> customFindAllByClubId(Integer clubId);
+
+    @Query(value = "select * from schedule s join club_management_clients.client cc " +
+            "on s.client_username = cc.username where cc.club_id = :clubId and " +
+            "(s.client_username in :clients or s.trainer_username in :trainers)", nativeQuery = true)
+    List<Schedule> customFindAllByClubIdAndClientsAndTrainers(Integer clubId, List<String> clients, List<String> trainers);
 }

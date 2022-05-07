@@ -59,6 +59,10 @@ public class ScheduleService {
         return this.scheduleRepository.customFindAllByClubId(clubId);
     }
 
+    public List<Schedule> getAllSchedulesByClientsAndTrainers(Integer clubId, List<String> clients, List<String> trainers) {
+        return this.scheduleRepository.customFindAllByClubIdAndClientsAndTrainers(clubId, clients, trainers);
+    }
+
     public Schedule saveSchedule(Schedule schedule, String mode, boolean isRecurrent) {
         ClientPurchase clientPurchase = this.clientPurchaseRepository
                 .findByClientUsernameAndPurchaseSubCategoryAndApptScheduledNot(schedule.getClientUsername(), schedule.getPurchaseSubCategory(), -1);
