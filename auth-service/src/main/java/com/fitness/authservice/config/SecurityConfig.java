@@ -37,6 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) {
         web.ignoring()
                 .antMatchers(HttpMethod.GET,"/users/**")
-                .antMatchers(HttpMethod.GET, "/users/club-validate");
+                .antMatchers(HttpMethod.GET, "/users/club-validate")
+                .antMatchers(HttpMethod.GET, "/trainer-working-hours/**");
     }
 }

@@ -61,4 +61,8 @@ public class Schedule implements Serializable {
     @JoinColumn(name = "sub_category_id", referencedColumnName = "sub_category_id")
     @ToString.Exclude
     private PurchaseSubCategory purchaseSubCategory;
+
+    @Transient
+    @JsonProperty("IsBlock")
+    private Boolean isBlock;
 }

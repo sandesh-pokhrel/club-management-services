@@ -1,16 +1,17 @@
 package com.fitness.purchaseservice.controller;
 
+import com.fitness.purchaseservice.feign.TrainerWorkingHourFeignClient;
 import com.fitness.purchaseservice.model.Schedule;
 import com.fitness.purchaseservice.model.ScheduleEditMode;
+import com.fitness.purchaseservice.model.TrainerWorkingHour;
 import com.fitness.purchaseservice.service.ScheduleService;
 import com.fitness.purchaseservice.util.ScheduleRecurrenceUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/schedules")
@@ -19,13 +20,37 @@ public class ScheduleController {
 
     private final ScheduleService scheduleService;
     private final ScheduleRecurrenceUtil scheduleRecurrenceUtil;
+    private final TrainerWorkingHourFeignClient trainerWorkingHourFeignClient;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<Schedule> getAllSchedules(@RequestParam("club-id") Integer clubId,
                                           @RequestParam("clients") List<String> clients,
-                                          @RequestParam("trainers") List<String> trainers) {
-        return this.scheduleService.getAllSchedulesByClientsAndTrainers(clubId, clients, trainers);
+                                          @RequestParam("trainers") List<String> trainers,
+                                          @RequestParam("trainer") String trainer) {
+        List<Schedule> schedules = this.scheduleService.getAllSchedulesByClientsAndTrainers(clubId, clients, trainers);
+        List<TrainerWorkingHour> trainerWorkingHours = new ArrayList<>();
+        if(Objects.nonNull(trainer) && !trainer.isEmpty())
+            trainerWorkingHours = this.trainerWorkingHourFeignClient.getTrainerWorkingHour(trainer);
+        List<Schedule> blockUpSchedules = trainerWorkingHours.stream().map(t -> Schedule.builder()
+                .isBlock(true)
+                .startTime(new Date(100, 1, 1, 2, 0))
+                .endTime(new Date(100, 1, 1, Integer.parseInt(t.getStartHour().split(":")[0]),
+                        Integer.parseInt(t.getStartHour().split(":")[1])))
+                .recurrenceRule("FREQ=WEEKLY;BYDAY="+t.getDay().substring(0,2)+";INTERVAL=1")
+                .build()).collect(Collectors.toList());
+
+        List<Schedule> blockDownSchedules = trainerWorkingHours.stream().map(t -> Schedule.builder()
+                .isBlock(true)
+                .endTime(new Date(100, 1, 1, 23, 0))
+                .startTime(new Date(100, 1, 1, Integer.parseInt(t.getEndHour().split(":")[0]),
+                        Integer.parseInt(t.getEndHour().split(":")[1])))
+                .recurrenceRule("FREQ=WEEKLY;BYDAY="+t.getDay().substring(0,2)+";INTERVAL=1")
+                .build()).collect(Collectors.toList());
+
+        schedules.addAll(blockUpSchedules);
+        schedules.addAll(blockDownSchedules);
+        return schedules;
     }
 
     @PostMapping
