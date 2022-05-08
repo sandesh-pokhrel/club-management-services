@@ -132,3 +132,20 @@ CREATE TABLE user_role
     constraint fk_user_role_username foreign key (username) references auth_user (username),
     constraint fk_user_role_role_id foreign key (role_id) references auth_role (id)
 );
+
+drop table if exists trainer_working_hour;
+create table trainer_working_hour
+(
+    id         integer      not null auto_increment,
+    username   varchar(100) not null,
+    day        varchar(100) not null,
+    start_hour time,
+    end_hour   time,
+    constraint chk_user_working_hour_start_hour check (start_hour >= '04:00:00'),
+    constraint chk_user_working_hour_end_hour check (end_hour <= '22:00:00'),
+    constraint chk_user_working_hour_start_end_hour check (end_hour > start_hour),
+    constraint chk_user_working_hour_day check ( day in ('SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT') ),
+    constraint unq_user_working_hour_username_day unique (username, day),
+    constraint fk_user_working_hour_username foreign key (username) references auth_user (username),
+    constraint pk_user_working_hour_id primary key (id)
+);
