@@ -44,3 +44,7 @@ insert into questionnaire (question, input_type, options, enabled)
 values ('Please rate how much muscle you intend to make?', 'rating', '1,2,3,4,5', true);
 
 COMMIT;
+
+-- Club table inserts
+insert into club (name, location) values ('Raynham Athletic Club', 'Raynham');
+insert into club (name, location) values ('Northeast Health And Fitness', 'Northeast');
