@@ -31,11 +31,11 @@ create table client
     postal_code             integer,
     is_prospect             boolean,
     club_id                 integer     not null,
-    dependent_username varchar(30),
-    dependent_relation varchar(100),
+    dependent_username      varchar(30),
+    dependent_relation      varchar(100),
     constraint pk_client_username primary key (username),
     constraint fk_client_club_id foreign key (club_id) references club (id),
-    constraint fk_client_dependent_username foreign key (dependent_username) references client(username)
+    constraint fk_client_dependent_username foreign key (dependent_username) references client (username)
 );
 
 drop table if exists questionnaire;
@@ -48,7 +48,7 @@ create table questionnaire
     enabled    boolean,
     service_id integer,
     constraint pk_questionnaire_id primary key (id),
-    constraint fk_questionnaire_service_id foreign key (service_id) references service(id)
+    constraint fk_questionnaire_service_id foreign key (service_id) references service (id)
 );
 
 drop table if exists client_questionnaire;
@@ -122,6 +122,25 @@ create table client_assessment
     unipedal_stance_open_right   double,
     unipedal_stance_closed_left  double,
     unipedal_stance_closed_right double,
+
+    neck                         double,
+    shoulder                     double,
+    chest                        double,
+    arm_at_side_left             double,
+    arm_at_side_right            double,
+    arm_flexed_left              double,
+    arm_flexed_right             double,
+    fore_arm_left                double,
+    fore_arm_right               double,
+    waist_one                    double,
+    waist_two                    double,
+    hips                         double,
+    quadriceps_left              double,
+    quadriceps_right             double,
+    left_calf                    double,
+    right_calf                   double,
+
+
     constraint pk_client_trainer_note_id primary key (id),
     constraint fk_client_assessment_clusername foreign key (client_username) references client (username),
     constraint fk_client_assessment_trusername foreign key (trainer_username)
@@ -148,8 +167,8 @@ create table client_goal
 drop table if exists service;
 create table service
 (
-    id                 integer not null auto_increment,
-    name               varchar(200),
+    id   integer not null auto_increment,
+    name varchar(200),
     constraint pk_services_id primary key (id)
 );
 

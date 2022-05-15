@@ -49,6 +49,23 @@ public class ClientAssessment {
     private Double unipedalStanceClosedLeft;
     private Double unipedalStanceClosedRight;
 
+    private Double neck;
+    private Double shoulder;
+    private Double chest;
+    private Double armAtSideLeft;
+    private Double armAtSideRight;
+    private Double armFlexedLeft;
+    private Double armFlexedRight;
+    private Double foreArmLeft;
+    private Double foreArmRight;
+    private Double waistOne;
+    private Double waistTwo;
+    private Double hips;
+    private Double quadricepsLeft;
+    private Double quadricepsRight;
+    private Double leftCalf;
+    private Double rightCalf;
+
     @Temporal(TemporalType.DATE)
     private Date assessmentDate;
 
