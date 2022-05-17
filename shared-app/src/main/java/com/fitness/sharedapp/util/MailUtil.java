@@ -40,7 +40,7 @@ public class MailUtil {
             String bodyText = "<h2>Club Management Questionnaire Form</h2>";
             bodyText += "<h3>Please click in the given link to fill up the questionnaire</h3>";
             bodyText += "<hr>";
-            bodyText += "<a href=\"http://localhost:4200/questionnaire/" +
+            bodyText += "<a href=\"http://localhost:4200/#/questionnaire/" +
                     serial + "\" style=\"" + buttonClass + "\">Fill Questionnaire</a>";
             helper.setText(bodyText, true);
 
