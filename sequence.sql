@@ -233,7 +233,6 @@ create table trainer_working_hour
     constraint chk_user_working_hour_end_hour check (end_hour <= '22:00:00'),
     constraint chk_user_working_hour_start_end_hour check (end_hour > start_hour),
     constraint chk_user_working_hour_day check ( day in ('SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT') ),
-    constraint unq_user_working_hour_username_day unique (username, day),
     constraint fk_user_working_hour_username foreign key (username) references auth_user (username),
     constraint pk_user_working_hour_id primary key (id)
 );

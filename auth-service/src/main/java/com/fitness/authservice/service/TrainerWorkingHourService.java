@@ -21,4 +21,8 @@ public class TrainerWorkingHourService {
     public List<TrainerWorkingHour> getByUser(User user) {
         return this.trainerWorkingHourRepository.findAllByUser(user);
     }
+
+    public void deleteById(Integer id) {
+        this.trainerWorkingHourRepository.deleteById(id);
+    }
 }

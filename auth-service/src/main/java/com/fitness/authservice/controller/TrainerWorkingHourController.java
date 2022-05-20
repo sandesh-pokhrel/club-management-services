@@ -33,4 +33,10 @@ public class TrainerWorkingHourController {
         User user = this.userService.getByUsername(username);
         return this.trainerWorkingHourService.getByUser(user);
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteTrainingWorkingHour(@PathVariable Integer id) {
+        this.trainerWorkingHourService.deleteById(id);
+    }
 }
