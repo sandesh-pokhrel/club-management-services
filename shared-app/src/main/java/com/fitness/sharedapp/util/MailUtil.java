@@ -2,7 +2,8 @@ package com.fitness.sharedapp.util;
 
 import com.fitness.sharedapp.common.MailProperties;
 import com.fitness.sharedapp.common.MailType;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -13,10 +14,13 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.util.ByteArrayDataSource;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MailUtil {
     private final JavaMailSender javaMailSender;
     private final MailProperties mailProperties;
+
+    @Value("${clubsystem.frontend.url}")
+    private String frontendURL;
 
     private MimeMessage getMessageFormat(String toEmail, MailType mailType, String serial,
                                          byte[] attachmentBytes) throws MessagingException {
@@ -40,7 +44,7 @@ public class MailUtil {
             String bodyText = "<h2>Club Management Questionnaire Form</h2>";
             bodyText += "<h3>Please click in the given link to fill up the questionnaire</h3>";
             bodyText += "<hr>";
-            bodyText += "<a href=\"http://localhost:4200/#/questionnaire/" +
+            bodyText += "<a href=\"" + frontendURL +
                     serial + "\" style=\"" + buttonClass + "\">Fill Questionnaire</a>";
             helper.setText(bodyText, true);
 
