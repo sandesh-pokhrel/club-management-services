@@ -22,32 +22,20 @@ public class MailUtil {
     @Value("${clubsystem.frontend.url}")
     private String frontendURL;
 
+    @Value("${mail.questionnaire}")
+    private String questionnaireMailFormat;
+
     private MimeMessage getMessageFormat(String toEmail, MailType mailType, String serial,
                                          byte[] attachmentBytes) throws MessagingException {
-        String buttonClass = "background-color: #EEEEEE;" +
-                "border: 1px solid black;" +
-                "color: green;" +
-                "padding: 5px 10px;" +
-                "text-align: center;" +
-                "display: inline-block;" +
-                "font-size: 20px;" +
-                "margin: 10px;" +
-                "text-decoration: none;" +
-                "cursor: pointer;";
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8");
         helper.setFrom(mailProperties.getUsername());
         helper.setTo(toEmail);
 
         if (mailType == MailType.CLIENT_QUESTIONNAIRE) {
+            questionnaireMailFormat = questionnaireMailFormat.replace("{##frontEndUrL##}", frontendURL+serial);
             helper.setSubject("Club Management Questionnaire");
-            String bodyText = "<h2>Club Management Questionnaire Form</h2>";
-            bodyText += "<h3>Please click in the given link to fill up the questionnaire</h3>";
-            bodyText += "<hr>";
-            bodyText += "<a href=\"" + frontendURL +
-                    serial + "\" style=\"" + buttonClass + "\">Fill Questionnaire</a>";
-            helper.setText(bodyText, true);
-
+            helper.setText(questionnaireMailFormat, true);
         } else if (mailType == MailType.RESET_PASSWORD) {
             System.out.println("Reset password request");
         } else if (mailType == MailType.CLIENT_ASSESSMENT) {
