@@ -10,7 +10,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @RestController
@@ -22,6 +24,58 @@ public class ScheduleController {
     private final ScheduleRecurrenceUtil scheduleRecurrenceUtil;
     private final TrainerWorkingHourFeignClient trainerWorkingHourFeignClient;
 
+    private static final List<String> WEEK_DAYS = Arrays.asList("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT");
+
+    private void calculateBlockedSchedules(List<Schedule> schedules, String trainer) {
+        List<TrainerWorkingHour> trainerWorkingHours = new ArrayList<>();
+        if (Objects.nonNull(trainer) && !trainer.isEmpty())
+            trainerWorkingHours = this.trainerWorkingHourFeignClient.getTrainerWorkingHour(trainer);
+        AtomicReference<LocalTime> localTimeAtomicReference = new AtomicReference<>(null);
+        List<TrainerWorkingHour> finalTrainerWorkingHours = trainerWorkingHours;
+        WEEK_DAYS.forEach(weekDay -> {
+            List<Schedule> blockUpSchedules = finalTrainerWorkingHours.stream()
+                    .filter(t -> t.getDay().equalsIgnoreCase(weekDay))
+                    .sorted(Comparator.comparing(f -> LocalTime.parse(f.getStartHour())))
+                    .map(t -> {
+                        if (Objects.isNull(localTimeAtomicReference.get())) {
+                            localTimeAtomicReference.set(LocalTime.of(LocalTime.parse(t.getEndHour()).getHour(),
+                                    LocalTime.parse(t.getEndHour()).getMinute()));
+                            return Schedule.builder()
+                                    .isBlock(true)
+                                    .startTime(new Date(100, 1, 1, 2, 0))
+                                    .endTime(new Date(100, 1, 1, Integer.parseInt(t.getStartHour().split(":")[0]),
+                                            Integer.parseInt(t.getStartHour().split(":")[1])))
+                                    .recurrenceRule("FREQ=WEEKLY;BYDAY=" + t.getDay().substring(0, 2) + ";INTERVAL=1")
+                                    .build();
+                        } else {
+                            LocalTime localTime = localTimeAtomicReference.get();
+                            Schedule schedule = Schedule.builder()
+                                    .isBlock(true)
+                                    .startTime(new Date(100, 1, 1, localTime.getHour(), localTime.getMinute()))
+                                    .endTime(new Date(100, 1, 1, Integer.parseInt(t.getStartHour().split(":")[0]),
+                                            Integer.parseInt(t.getStartHour().split(":")[1])))
+                                    .recurrenceRule("FREQ=WEEKLY;BYDAY=" + t.getDay().substring(0, 2) + ";INTERVAL=1")
+                                    .build();
+                            localTimeAtomicReference.set(LocalTime.of(LocalTime.parse(t.getEndHour()).getHour(),
+                                    LocalTime.parse(t.getEndHour()).getMinute()));
+                            return schedule;
+                        }
+                    }).collect(Collectors.toList());
+
+            if (Objects.nonNull(localTimeAtomicReference.get())) {
+                LocalTime localTime = localTimeAtomicReference.get();
+                schedules.add(Schedule.builder()
+                        .isBlock(true)
+                        .endTime(new Date(100, 1, 1, 22, 0))
+                        .startTime(new Date(100, 1, 1, localTime.getHour(), localTime.getMinute()))
+                        .recurrenceRule("FREQ=WEEKLY;BYDAY=" + weekDay.substring(0, 2) + ";INTERVAL=1")
+                        .build());
+            }
+            schedules.addAll(blockUpSchedules);
+            localTimeAtomicReference.set(null);
+        });
+    }
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<Schedule> getAllSchedules(@RequestParam("club-id") Integer clubId,
@@ -29,27 +83,7 @@ public class ScheduleController {
                                           @RequestParam("trainers") List<String> trainers,
                                           @RequestParam("trainer") String trainer) {
         List<Schedule> schedules = this.scheduleService.getAllSchedulesByClientsAndTrainers(clubId, clients, trainers);
-        List<TrainerWorkingHour> trainerWorkingHours = new ArrayList<>();
-        if(Objects.nonNull(trainer) && !trainer.isEmpty())
-            trainerWorkingHours = this.trainerWorkingHourFeignClient.getTrainerWorkingHour(trainer);
-        List<Schedule> blockUpSchedules = trainerWorkingHours.stream().map(t -> Schedule.builder()
-                .isBlock(true)
-                .startTime(new Date(100, 1, 1, 2, 0))
-                .endTime(new Date(100, 1, 1, Integer.parseInt(t.getStartHour().split(":")[0]),
-                        Integer.parseInt(t.getStartHour().split(":")[1])))
-                .recurrenceRule("FREQ=WEEKLY;BYDAY="+t.getDay().substring(0,2)+";INTERVAL=1")
-                .build()).collect(Collectors.toList());
-
-        List<Schedule> blockDownSchedules = trainerWorkingHours.stream().map(t -> Schedule.builder()
-                .isBlock(true)
-                .endTime(new Date(100, 1, 1, 23, 0))
-                .startTime(new Date(100, 1, 1, Integer.parseInt(t.getEndHour().split(":")[0]),
-                        Integer.parseInt(t.getEndHour().split(":")[1])))
-                .recurrenceRule("FREQ=WEEKLY;BYDAY="+t.getDay().substring(0,2)+";INTERVAL=1")
-                .build()).collect(Collectors.toList());
-
-        schedules.addAll(blockUpSchedules);
-        schedules.addAll(blockDownSchedules);
+        calculateBlockedSchedules(schedules, trainer);
         return schedules;
     }
 
