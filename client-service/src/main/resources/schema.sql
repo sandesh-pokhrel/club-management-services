@@ -41,12 +41,14 @@ create table client
 drop table if exists questionnaire;
 create table questionnaire
 (
-    id         integer                          not null auto_increment,
-    question   varchar(3000) character set utf8 not null,
-    input_type varchar(100)                     not null,
-    options    varchar(5000),
-    enabled    boolean,
-    service_id integer,
+    id          integer                          not null auto_increment,
+    question    varchar(3000) character set utf8 not null,
+    input_type  varchar(100)                     not null,
+    options     varchar(5000),
+    enabled     boolean,
+    service_id  integer,
+    question_id integer,
+    max         integer,
     constraint pk_questionnaire_id primary key (id),
     constraint fk_questionnaire_service_id foreign key (service_id) references service (id)
 );

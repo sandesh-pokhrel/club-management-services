@@ -1,6 +1,5 @@
 package com.fitness.clientservice.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -21,6 +20,8 @@ public class Questionnaire {
     private String inputType;
     private String options;
     private Boolean enabled;
+    private Integer questionId;
+    private Integer max;
 
     @ManyToOne
     @JoinColumn(name = "service_id", referencedColumnName = "id",
