@@ -73,4 +73,15 @@ public class PurchaseCategoryController {
         PurchaseCategory purchaseCategory = purchaseCategoryService.getPurchaseCategoryById(id);
         this.purchaseCategoryService.deletePurchaseCategory(purchaseCategory);
     }
+
+    @DeleteMapping("/sub-categories/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deletePurchaseSubCategory(@PathVariable Integer id) {
+        try {
+            this.purchaseCategoryService.deletePurchaseSubCategory(id);
+        } catch (Exception ex) {
+            throw new BadRequestException("Cannot delete the category as it has the associated purchase!");
+        }
+
+    }
 }

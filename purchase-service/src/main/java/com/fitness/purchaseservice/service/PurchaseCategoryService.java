@@ -55,4 +55,8 @@ public class PurchaseCategoryService {
         }
         this.purchaseCategoryRepository.delete(purchaseCategory);
     }
+
+    public void deletePurchaseSubCategory(Integer id) {
+        this.purchaseSubCategoryRepository.deleteById(id);
+    }
 }
