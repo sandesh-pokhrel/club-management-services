@@ -15,6 +15,7 @@ create table purchase_sub_category
     sub_category_id    int auto_increment primary key,
     category_id        int          not null,
     sub_category_name  varchar(300) not null,
+    length             double       not null,
     base_rate          double       null,
     amount             double       not null,
     payment_interval   varchar(50)  null,

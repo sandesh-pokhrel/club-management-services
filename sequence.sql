@@ -352,6 +352,7 @@ create table purchase_sub_category
     sub_category_id    int auto_increment primary key,
     category_id        int          not null,
     sub_category_name  varchar(300) not null,
+    length             double       not null,
     base_rate          double       null,
     amount             double       not null,
     payment_interval   varchar(50)  null,
@@ -434,8 +435,10 @@ create table schedule
 
 -- ------------- DATA RELATED -- -------------------------
 use club_management_clients;
-insert into club (name, location) values ('Raynham Athletic Club', 'Raynham');
-insert into club (name, location) values ('Northeast Health And Fitness', 'Northeast');
+insert into club (name, location)
+values ('Raynham Athletic Club', 'Raynham');
+insert into club (name, location)
+values ('Northeast Health And Fitness', 'Northeast');
 
 insert into questionnaire (question, input_type, options, enabled)
 values ('What is you major intention of joining gym?', 'textarea', null, true);
