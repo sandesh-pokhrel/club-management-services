@@ -19,6 +19,7 @@ public class PurchaseSubCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String subCategoryName;
+    private Double length;
     private Double baseRate;
     private Double amount;
     private String paymentInterval;
