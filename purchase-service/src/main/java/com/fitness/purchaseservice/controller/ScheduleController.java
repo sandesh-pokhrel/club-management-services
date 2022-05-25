@@ -42,8 +42,8 @@ public class ScheduleController {
                                     LocalTime.parse(t.getEndHour()).getMinute()));
                             return Schedule.builder()
                                     .isBlock(true)
-                                    .startTime(new Date(100, 1, 1, 2, 0))
-                                    .endTime(new Date(100, 1, 1, Integer.parseInt(t.getStartHour().split(":")[0]),
+                                    .startTime(new Date(100, Calendar.JANUARY, 1, 2, 0))
+                                    .endTime(new Date(100, Calendar.JANUARY, 1, Integer.parseInt(t.getStartHour().split(":")[0]),
                                             Integer.parseInt(t.getStartHour().split(":")[1])))
                                     .recurrenceRule("FREQ=WEEKLY;BYDAY=" + t.getDay().substring(0, 2) + ";INTERVAL=1")
                                     .build();
@@ -51,8 +51,8 @@ public class ScheduleController {
                             LocalTime localTime = localTimeAtomicReference.get();
                             Schedule schedule = Schedule.builder()
                                     .isBlock(true)
-                                    .startTime(new Date(100, 1, 1, localTime.getHour(), localTime.getMinute()))
-                                    .endTime(new Date(100, 1, 1, Integer.parseInt(t.getStartHour().split(":")[0]),
+                                    .startTime(new Date(100, Calendar.JANUARY, 1, localTime.getHour(), localTime.getMinute()))
+                                    .endTime(new Date(100, Calendar.JANUARY, 1, Integer.parseInt(t.getStartHour().split(":")[0]),
                                             Integer.parseInt(t.getStartHour().split(":")[1])))
                                     .recurrenceRule("FREQ=WEEKLY;BYDAY=" + t.getDay().substring(0, 2) + ";INTERVAL=1")
                                     .build();
@@ -66,8 +66,8 @@ public class ScheduleController {
                 LocalTime localTime = localTimeAtomicReference.get();
                 schedules.add(Schedule.builder()
                         .isBlock(true)
-                        .endTime(new Date(100, 1, 1, 22, 0))
-                        .startTime(new Date(100, 1, 1, localTime.getHour(), localTime.getMinute()))
+                        .endTime(new Date(100, Calendar.JANUARY, 1, 22, 0))
+                        .startTime(new Date(100, Calendar.JANUARY, 1, localTime.getHour(), localTime.getMinute()))
                         .recurrenceRule("FREQ=WEEKLY;BYDAY=" + weekDay.substring(0, 2) + ";INTERVAL=1")
                         .build());
             }
