@@ -22,6 +22,8 @@ public class Questionnaire {
     private Boolean enabled;
     private Integer questionId;
     private Integer max;
+    private Boolean isRequired;
+    private String sortOrder;
 
     @ManyToOne
     @JoinColumn(name = "service_id", referencedColumnName = "id",

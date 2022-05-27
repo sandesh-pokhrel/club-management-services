@@ -41,6 +41,12 @@ public class QuestionnaireController {
         return questionnaireService.saveQuestion(questionnaire);
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void delete(@PathVariable Integer id) {
+        questionnaireService.deleteQuestion(id);
+    }
+
     @PostMapping("/answers/{serial}")
     @ResponseStatus(HttpStatus.CREATED)
     public void onQuestionnaireSubmitted(@PathVariable String serial,

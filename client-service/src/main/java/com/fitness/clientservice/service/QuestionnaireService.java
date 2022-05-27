@@ -4,6 +4,7 @@ import com.fitness.clientservice.model.ClientQuestionnaire;
 import com.fitness.clientservice.model.Questionnaire;
 import com.fitness.clientservice.repository.ClientQuestionnaireRepository;
 import com.fitness.clientservice.repository.QuestionnaireRepository;
+import com.fitness.sharedapp.exception.BadRequestException;
 import com.fitness.sharedapp.service.GenericService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,15 @@ public class QuestionnaireService extends GenericService {
 
     public Questionnaire saveQuestion(Questionnaire questionnaire) {
         return this.questionnaireRepository.save(questionnaire);
+    }
+
+    public void deleteQuestion(Integer id) {
+        try {
+            this.questionnaireRepository.deleteById(id);
+        } catch (Exception ex) {
+            throw new BadRequestException("Question has associated answer. Could not delete!");
+        }
+
     }
 
     public List<ClientQuestionnaire> getAllClientAnsers(String clientUsername) {
