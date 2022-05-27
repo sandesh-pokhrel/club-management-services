@@ -33,9 +33,9 @@ public class MailUtil {
         helper.setTo(toEmail);
 
         if (mailType == MailType.CLIENT_QUESTIONNAIRE) {
-            questionnaireMailFormat = questionnaireMailFormat.replace("{##frontEndUrL##}", frontendURL+serial);
+            String mailBody = questionnaireMailFormat.replace("{##frontEndUrL##}", frontendURL + serial);
             helper.setSubject("Club Management Questionnaire");
-            helper.setText(questionnaireMailFormat, true);
+            helper.setText(mailBody, true);
         } else if (mailType == MailType.RESET_PASSWORD) {
             System.out.println("Reset password request");
         } else if (mailType == MailType.CLIENT_ASSESSMENT) {
