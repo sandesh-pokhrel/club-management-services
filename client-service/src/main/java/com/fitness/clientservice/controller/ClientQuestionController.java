@@ -27,7 +27,7 @@ public class ClientQuestionController {
 
     @GetMapping("/send-questionnaire/{username}")
     public void sendQuestionnaireToClient(@PathVariable String username) throws MessagingException {
-        //this.clientExtraInfoService.checkIfAlreadyQuestioned(username);
+        this.clientQuestionService.checkIfAlreadyQuestioned(username);
         Client client = this.clientService.getClientByUsername(username);
         if (Objects.isNull(client)) {
             throw new NotFoundException("User not found!");

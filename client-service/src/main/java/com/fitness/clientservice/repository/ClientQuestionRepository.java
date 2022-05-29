@@ -12,7 +12,8 @@ import java.util.Optional;
 @Repository
 public interface ClientQuestionRepository extends JpaRepository<ClientQuestion, String> {
 
-    boolean existsByClientUsernameAndQuestionnaireInitiated(String username, boolean check);
+//    boolean existsByClientUsernameAndQuestionnaireInitiated(String username, boolean check);
+    boolean existsByClientUsername(String username);
     boolean existsByQuestionnaireSerial(String serial);
 
     Optional<ClientQuestion> findByQuestionnaireSerial(String serial);

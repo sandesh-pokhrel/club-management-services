@@ -27,7 +27,7 @@ public class ClientQuestionService {
     }
 
     public void checkIfAlreadyQuestioned(String username) {
-        if (this.clientQuestionRepository.existsByClientUsernameAndQuestionnaireInitiated(username, true)) {
+        if (this.clientQuestionRepository.existsByClientUsername(username)) {
             throw new AlreadyExistsException("Questionnaire already completed for the given user!");
         }
     }
