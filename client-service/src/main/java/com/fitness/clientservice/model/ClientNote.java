@@ -15,7 +15,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @Builder
-public class ClientNote {
+public class ClientNote extends AuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

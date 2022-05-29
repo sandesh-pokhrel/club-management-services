@@ -14,7 +14,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Entity
 @Table(name = "purchase_category")
-public class PurchaseCategory {
+public class PurchaseCategory extends AuditEntity {
 
     @Id
     @Column(name = "category_id")

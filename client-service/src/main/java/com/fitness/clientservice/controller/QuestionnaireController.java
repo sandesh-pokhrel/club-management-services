@@ -1,11 +1,11 @@
 package com.fitness.clientservice.controller;
 
-import com.fitness.clientservice.model.ClientExtraInfo;
-import com.fitness.clientservice.model.ClientQuestionnaire;
+import com.fitness.clientservice.model.ClientQuestion;
+import com.fitness.clientservice.model.ClientQuestionAnswer;
 import com.fitness.clientservice.model.Questionnaire;
 import com.fitness.clientservice.request.ClientQuestionnaireRequest;
 import com.fitness.clientservice.request.mapper.ClientQuestionnaireRequestMapper;
-import com.fitness.clientservice.service.ClientExtraInfoService;
+import com.fitness.clientservice.service.ClientQuestionService;
 import com.fitness.clientservice.service.QuestionnaireService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ import java.util.List;
 public class QuestionnaireController {
 
     private final QuestionnaireService questionnaireService;
-    private final ClientExtraInfoService clientExtraInfoService;
+    private final ClientQuestionService clientQuestionService;
     private final ClientQuestionnaireRequestMapper clientQuestionnaireRequestMapper;
 
     @GetMapping
@@ -51,22 +51,22 @@ public class QuestionnaireController {
     @ResponseStatus(HttpStatus.CREATED)
     public void onQuestionnaireSubmitted(@PathVariable String serial,
                                          @RequestBody List<ClientQuestionnaireRequest> clientQuestionnaireRequests) {
-        ClientExtraInfo clientExtraInfo = this.clientExtraInfoService.getClientExtraInfo(serial);
-        List<ClientQuestionnaire> clientQuestionnaires = new ArrayList<>();
+        ClientQuestion clientQuestion = this.clientQuestionService.getClientExtraInfo(serial);
+        List<ClientQuestionAnswer> clientQuestionAnswers = new ArrayList<>();
         clientQuestionnaireRequests.forEach(clientQuestionnaireRequest -> {
-                    ClientQuestionnaire clientQuestionnaire = clientQuestionnaireRequestMapper
+                    ClientQuestionAnswer clientQuestionAnswer = clientQuestionnaireRequestMapper
                             .from(clientQuestionnaireRequest, questionnaireService);
-                    clientQuestionnaire.setClientUsername(clientExtraInfo.getClientUsername());
-                    clientQuestionnaires.add(clientQuestionnaire);
+                    clientQuestionAnswer.setClientUsername(clientQuestion.getClientUsername());
+                    clientQuestionAnswers.add(clientQuestionAnswer);
                 }
         );
-        this.questionnaireService.saveAllClientQuestionnaire(clientQuestionnaires);
-        this.clientExtraInfoService.nullifyQuestionnaireSerialForUsername(clientExtraInfo.getClientUsername());
+        this.questionnaireService.saveAllClientQuestionnaire(clientQuestionAnswers);
+        this.clientQuestionService.nullifyQuestionnaireSerialForUsername(clientQuestion.getClientUsername());
     }
 
     @GetMapping("/client-answers/{username}")
     @ResponseStatus(HttpStatus.OK)
-    public List<ClientQuestionnaire> getAllClientAnswers(@PathVariable String username) {
+    public List<ClientQuestionAnswer> getAllClientAnswers(@PathVariable String username) {
         return questionnaireService.getAllClientAnsers(username);
     }
 }

@@ -18,7 +18,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Builder
-public class Client extends RepresentationModel<Client> {
+public class Client extends AuditEntity {
 
     @Id
     @NotBlank(message = "Username cannot be blank")

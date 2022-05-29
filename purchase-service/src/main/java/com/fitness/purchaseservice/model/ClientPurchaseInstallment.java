@@ -12,7 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Entity
 @Table(name = "client_purchase_installment")
-public class ClientPurchaseInstallment {
+public class ClientPurchaseInstallment extends AuditEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

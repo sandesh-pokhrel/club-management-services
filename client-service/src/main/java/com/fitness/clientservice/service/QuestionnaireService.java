@@ -1,8 +1,8 @@
 package com.fitness.clientservice.service;
 
-import com.fitness.clientservice.model.ClientQuestionnaire;
+import com.fitness.clientservice.model.ClientQuestionAnswer;
 import com.fitness.clientservice.model.Questionnaire;
-import com.fitness.clientservice.repository.ClientQuestionnaireRepository;
+import com.fitness.clientservice.repository.ClientQuestionAnswerRepository;
 import com.fitness.clientservice.repository.QuestionnaireRepository;
 import com.fitness.sharedapp.exception.BadRequestException;
 import com.fitness.sharedapp.service.GenericService;
@@ -16,7 +16,7 @@ import java.util.List;
 public class QuestionnaireService extends GenericService {
 
     private final QuestionnaireRepository questionnaireRepository;
-    private final ClientQuestionnaireRepository clientQuestionnaireRepository;
+    private final ClientQuestionAnswerRepository clientQuestionAnswerRepository;
 
     public List<Questionnaire> getAllQuestions() {
         return this.questionnaireRepository.findAll();
@@ -30,8 +30,8 @@ public class QuestionnaireService extends GenericService {
         return this.questionnaireRepository.findById(id).orElse(null);
     }
 
-    public void saveAllClientQuestionnaire(List<ClientQuestionnaire> clientQuestionnaires) {
-        this.clientQuestionnaireRepository.saveAllAndFlush(clientQuestionnaires);
+    public void saveAllClientQuestionnaire(List<ClientQuestionAnswer> clientQuestionAnswers) {
+        this.clientQuestionAnswerRepository.saveAllAndFlush(clientQuestionAnswers);
     }
 
     public Questionnaire saveQuestion(Questionnaire questionnaire) {
@@ -47,7 +47,7 @@ public class QuestionnaireService extends GenericService {
 
     }
 
-    public List<ClientQuestionnaire> getAllClientAnsers(String clientUsername) {
-        return this.clientQuestionnaireRepository.findAllByClientUsername(clientUsername);
+    public List<ClientQuestionAnswer> getAllClientAnsers(String clientUsername) {
+        return this.clientQuestionAnswerRepository.findAllByClientUsername(clientUsername);
     }
 }

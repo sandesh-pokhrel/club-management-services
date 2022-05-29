@@ -12,7 +12,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Entity
 @Table(name = "purchase_sub_category")
-public class PurchaseSubCategory {
+public class PurchaseSubCategory extends AuditEntity {
 
     @Id
     @Column(name = "sub_category_id")

@@ -1,8 +1,8 @@
 package com.fitness.clientservice.controller;
 
 import com.fitness.clientservice.model.Client;
-import com.fitness.clientservice.model.ClientExtraInfo;
-import com.fitness.clientservice.service.ClientExtraInfoService;
+import com.fitness.clientservice.model.ClientQuestion;
+import com.fitness.clientservice.service.ClientQuestionService;
 import com.fitness.clientservice.service.ClientService;
 import com.fitness.sharedapp.common.MailType;
 import com.fitness.sharedapp.exception.NotFoundException;
@@ -18,29 +18,29 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/client-extra-info")
 @AllArgsConstructor
-public class ClientExtraInfoController {
+public class ClientQuestionController {
 
-    private final ClientExtraInfoService clientExtraInfoService;
+    private final ClientQuestionService clientQuestionService;
     private final GeneralUtil generalUtil;
     private final MailUtil mailUtil;
     private final ClientService clientService;
 
     @GetMapping("/send-questionnaire/{username}")
     public void sendQuestionnaireToClient(@PathVariable String username) throws MessagingException {
-        this.clientExtraInfoService.checkIfAlreadyQuestioned(username);
+        //this.clientExtraInfoService.checkIfAlreadyQuestioned(username);
         Client client = this.clientService.getClientByUsername(username);
         if (Objects.isNull(client)) {
             throw new NotFoundException("User not found!");
         }
         String serial = generalUtil.getSerialNumber();
-        ClientExtraInfo clientExtraInfo = new ClientExtraInfo(username, true, serial);
+        ClientQuestion clientQuestion = new ClientQuestion(username, true, serial);
         this.mailUtil.sendMail(client.getEmail(), MailType.CLIENT_QUESTIONNAIRE, serial, null);
-        this.clientExtraInfoService.save(clientExtraInfo);
+        this.clientQuestionService.save(clientQuestion);
     }
 
     @GetMapping("/check-questionnaire-serial/{serial}")
     @ResponseStatus(HttpStatus.OK)
     public void isSerialValid(@PathVariable String serial) {
-        this.clientExtraInfoService.checkQuestionnaireSerialValidity(serial);
+        this.clientQuestionService.checkQuestionnaireSerialValidity(serial);
     }
 }

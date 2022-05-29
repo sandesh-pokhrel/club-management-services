@@ -39,8 +39,8 @@ public class ClientController {
     public ResponseEntity<Page<Client>> getAllClients(@RequestParam Map<String, String> paramMap,
                                                       @RequestHeader("Club-Id") Integer clubId) {
         Page<Client> clientsPage = this.clientService.getAllClients(paramMap, clubId);
-        clientsPage.getContent().forEach(client -> client.add(linkTo(methodOn(ClientController.class)
-                .getClientByUsername(client.getUsername())).withSelfRel()));
+//        clientsPage.getContent().forEach(client -> client.add(linkTo(methodOn(ClientController.class)
+//                .getClientByUsername(client.getUsername())).withSelfRel()));
         return ResponseEntity.ok(clientsPage);
     }
 

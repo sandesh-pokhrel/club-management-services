@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Setter
 @ToString
 @Builder
-public class ClientGoal {
+public class ClientGoal extends AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

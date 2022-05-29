@@ -16,7 +16,7 @@ import java.util.Date;
 @ToString
 @Builder
 @Table(name = "schedule")
-public class Schedule implements Serializable {
+public class Schedule extends AuditEntity implements Serializable {
 
     public Schedule(Schedule source) {
         this.setSubject(source.getSubject());

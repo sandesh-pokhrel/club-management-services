@@ -13,9 +13,12 @@ import feign.FeignException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +59,13 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public List<String> getAllUsernames(@RequestHeader("Club-Id") Integer clubId) {
         return this.userService.getAllUsernames(clubId);
+    }
+
+    @GetMapping("/info")
+    @ResponseStatus(HttpStatus.OK)
+    public Principal getUserInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (Principal) authentication.getPrincipal();
     }
 
     @GetMapping("/{username}")

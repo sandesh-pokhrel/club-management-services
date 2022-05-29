@@ -2,19 +2,18 @@ package com.fitness.clientservice.model;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
-@Table(name = "client_extra_info")
+@Table(name = "client_question")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
 @Builder
-public class ClientExtraInfo {
+public class ClientQuestion extends AuditEntity {
+
     @Id
     private String clientUsername;
     private Boolean questionnaireInitiated;
