@@ -20,7 +20,7 @@ public interface ClientQuestionRepository extends JpaRepository<ClientQuestion, 
 
     @Modifying
     @Transactional
-//    @Query("update ClientExtraInfo c set c.questionnaireSerial = null where c.clientUsername = ?1")
-    @Query("update ClientQuestion c set c.questionnaireInitiated = false where c.clientUsername = ?1")
+    @Query("update ClientQuestion c set c.questionnaireSerial = null where c.clientUsername = ?1")
+//    @Query("update ClientQuestion c set c.questionnaireInitiated = false where c.clientUsername = ?1")
     void nullifySerialForUsername(String username);
 }
