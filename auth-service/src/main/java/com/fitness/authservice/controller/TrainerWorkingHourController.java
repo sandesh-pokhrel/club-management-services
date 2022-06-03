@@ -24,6 +24,7 @@ public class TrainerWorkingHourController {
                                                      @PathVariable String username) {
         User user = this.userService.getByUsername(username);
         trainerWorkingHour.setUser(user);
+        trainerWorkingHour.setDeleted(false);
         return this.trainerWorkingHourService.save(trainerWorkingHour);
     }
 
@@ -38,5 +39,13 @@ public class TrainerWorkingHourController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteTrainingWorkingHour(@PathVariable Integer id) {
         this.trainerWorkingHourService.deleteById(id);
+    }
+
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public TrainerWorkingHour disableTrainingWorkingHour(@PathVariable Integer id) {
+        TrainerWorkingHour workingHour = this.trainerWorkingHourService.getById(id);
+        workingHour.setDeleted(true);
+        return this.trainerWorkingHourService.save(workingHour);
     }
 }

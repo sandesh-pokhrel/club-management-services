@@ -14,7 +14,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "trainer_working_hour")
-public class TrainerWorkingHour {
+public class TrainerWorkingHour extends AuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +23,8 @@ public class TrainerWorkingHour {
     private String day;
     private String startHour;
     private String endHour;
+    @Column(name = "is_deleted")
+    private boolean deleted;
 
     @ManyToOne
     @JoinColumn(name = "username", referencedColumnName = "username",

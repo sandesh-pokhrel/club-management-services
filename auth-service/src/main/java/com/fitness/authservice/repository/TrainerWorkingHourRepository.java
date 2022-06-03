@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface TrainerWorkingHourRepository extends JpaRepository<TrainerWorkingHour, Integer> {
 
-    List<TrainerWorkingHour> findAllByUser(User user);
+    List<TrainerWorkingHour> findAllByUserAndDeletedIsFalse(User user);
 }
