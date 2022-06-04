@@ -23,7 +23,7 @@ public class Questionnaire extends AuditEntity {
     private Integer questionId;
     private Integer max;
     private Boolean isRequired;
-    private String sortOrder;
+    private Integer sortOrder;
 
     @ManyToOne
     @JoinColumn(name = "service_id", referencedColumnName = "id",
