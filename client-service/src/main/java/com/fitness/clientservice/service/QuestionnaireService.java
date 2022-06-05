@@ -20,12 +20,24 @@ public class QuestionnaireService extends GenericService {
     private final QuestionnaireRepository questionnaireRepository;
     private final ClientQuestionAnswerRepository clientQuestionAnswerRepository;
 
+    public Questionnaire getById(Integer id) {
+        return this.questionnaireRepository.findById(id).orElse(null);
+    }
+
     public List<Questionnaire> getAllQuestions() {
         return this.questionnaireRepository.findAll(Sort.by(Sort.Direction.ASC, "sortOrder"));
     }
 
     public List<Questionnaire> getAllEnabledQuestions() {
         return this.questionnaireRepository.findAllByEnabled(true, Sort.by(Sort.Direction.ASC, "sortOrder"));
+    }
+
+    public List<Questionnaire> getAllQuestionsByClub(Integer clubId) {
+        return this.questionnaireRepository.findAllByClubId(clubId, Sort.by(Sort.Direction.ASC, "sortOrder"));
+    }
+
+    public List<Questionnaire> getAllEnabledQuestionsByClub(Integer clubId) {
+        return this.questionnaireRepository.findAllByEnabledAndClubId(true, clubId, Sort.by(Sort.Direction.ASC, "sortOrder"));
     }
 
     public Questionnaire getQuestionsById(Integer id) {

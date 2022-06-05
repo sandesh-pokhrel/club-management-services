@@ -26,19 +26,26 @@ public class QuestionnaireController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Questionnaire> getAllEnabled() {
-        return questionnaireService.getAllEnabledQuestions();
+    public List<Questionnaire> getAllEnabled(@RequestHeader("Club-Id") Integer clubId) {
+        return questionnaireService.getAllEnabledQuestionsByClub(clubId);
     }
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public List<Questionnaire> getAll() {
-        return questionnaireService.getAllQuestions();
+    public List<Questionnaire> getAll(@RequestHeader("Club-Id") Integer clubId) {
+        return questionnaireService.getAllQuestionsByClub(clubId);
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Questionnaire getById(@PathVariable Integer id) {
+        return questionnaireService.getById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Questionnaire save(@RequestBody Questionnaire questionnaire) {
+    public Questionnaire save(@RequestBody Questionnaire questionnaire, @RequestHeader("Club-Id") Integer clubId) {
+        questionnaire.setClubId(clubId);
         return questionnaireService.saveQuestion(questionnaire);
     }
 

@@ -12,6 +12,10 @@ import java.util.List;
 public interface QuestionnaireRepository extends JpaRepository<Questionnaire, Integer> {
     List<Questionnaire> findAllByEnabled(boolean enabled, Sort sort);
 
+    List<Questionnaire> findAllByClubId(Integer clubId, Sort sort);
+
+    List<Questionnaire> findAllByEnabledAndClubId(boolean enabled, Integer clubId, Sort sort);
+
     List<Questionnaire> findAllBySortOrder(Integer sortOrder);
 
     List<Questionnaire> findAllBySortOrderGreaterThanEqual(Integer sortOrder);

@@ -24,6 +24,7 @@ public class Questionnaire extends AuditEntity {
     private Integer max;
     private Boolean isRequired;
     private Integer sortOrder;
+    private Integer clubId;
 
     @ManyToOne
     @JoinColumn(name = "service_id", referencedColumnName = "id",
