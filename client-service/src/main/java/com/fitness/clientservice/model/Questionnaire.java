@@ -24,6 +24,7 @@ public class Questionnaire extends AuditEntity {
     private Integer max;
     private Boolean isRequired;
     private Integer sortOrder;
+    @Column(updatable = false)
     private Integer clubId;
 
     @ManyToOne
