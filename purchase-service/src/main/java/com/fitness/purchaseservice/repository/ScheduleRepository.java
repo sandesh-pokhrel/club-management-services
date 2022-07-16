@@ -3,9 +3,11 @@ package com.fitness.purchaseservice.repository;
 import com.fitness.purchaseservice.model.PurchaseSubCategory;
 import com.fitness.purchaseservice.model.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +32,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
     List<Schedule> findAllByClientUsername(String username);
 
     List<Schedule> findAllByTrainerUsername(String username);
+
+    List<Schedule> findAllByIdIn(List<Integer> ids);
 
     @Query(value = "select * from schedule s where recurrence_rule is null " +
             "and date(s.start_time)=current_date", nativeQuery = true)

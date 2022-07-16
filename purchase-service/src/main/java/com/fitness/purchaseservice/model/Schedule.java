@@ -7,6 +7,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Random;
 
 @Getter
 @Setter
@@ -19,6 +20,7 @@ import java.util.Date;
 public class Schedule extends AuditEntity implements Serializable {
 
     public Schedule(Schedule source) {
+        this.setId(source.getId());
         this.setSubject(source.getSubject());
         this.setTrainerUsername(source.getTrainerUsername());
         this.setClientUsername(source.getClientUsername());
@@ -26,6 +28,11 @@ public class Schedule extends AuditEntity implements Serializable {
         this.setStatus(source.getStatus());
         this.setStartTime(source.getStartTime());
         this.setEndTime(source.getEndTime());
+        this.setRecurrenceException(source.getRecurrenceException());
+        this.setRecurrenceRule(source.getRecurrenceRule());
+        this.setRecurrenceId(source.getRecurrenceId());
+        this.setSeriesIdentifier(source.getSeriesIdentifier());
+        this.setPurchaseSubCategory(source.getPurchaseSubCategory());
     }
 
     @Id

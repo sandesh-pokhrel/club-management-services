@@ -85,44 +85,54 @@ public class ScheduleService {
                     // Schedule to edit is already a recurrence schedule
                     if (Objects.nonNull(scheduleFromDb.getRecurrenceRule())) {
                         List<Schedule> editedSchedules = checkForReadOnlyWhileEntireSeriesModification(schedule.getId());
+                        // if no read only schedules is found in the recurrent series list then delete all
                         if (editedSchedules.size() > 0)
                             this.scheduleRepository.deleteAllInBatch(editedSchedules);
+
+                        // reset all the fields of the recurrent series
                         schedule.setIsReadOnly(false);
                         schedule.setRecurrenceException(null);
                         schedule.setDeletedCount(0);
                         schedule.setRecurrenceId(null);
                     }
                 } else {
+                    // passed schedule is an edited instance
                     String recurrenceException = schedule.getRecurrenceException();
                     String recurrenceExceptionDb = scheduleFromDb.getRecurrenceException();
+                    // checking if the recurrentException already exists in the parent schedule exceptions list
                     if (Objects.nonNull(recurrenceExceptionDb) && !recurrenceExceptionDb.isEmpty()) {
                         AtomicBoolean recurrenceExists = new AtomicBoolean(false);
                         Stream.of(recurrenceExceptionDb.split(",")).forEach(rException -> {
                             if (rException.trim().equals(recurrenceException))
                                 recurrenceExists.set(true);
                         });
+                        // if recurEx not in parent schedule then append at the end
                         if (!recurrenceExists.get())
                             scheduleFromDb.setRecurrenceException(recurrenceExceptionDb + "," + recurrenceException);
                     } else scheduleFromDb.setRecurrenceException(recurrenceException);
                     Schedule editedScheduleInDb = this.scheduleRepository
                             .findByRecurrenceExceptionAndRecurrenceId(recurrenceException, schedule.getRecurrenceId()).orElse(null);
                     setReadOnlyBehaviorOnEdit(schedule, clientPurchase);
+                    // if edited instance is not already stored in the database then set the id to null
                     if (Objects.isNull(editedScheduleInDb)) schedule.setId(null);
                     else schedule.setId(editedScheduleInDb.getId());
+                    // for deleted alike schedule status increment deleted count column value
                     if (StringUtils.equalsAnyIgnoreCase(schedule.getStatus(), Constants.DELETED_ALIKE_SCHEDULE_STATUS)) {
                         Integer deletedCount = scheduleFromDb.getDeletedCount();
                         if (Objects.isNull(deletedCount) || deletedCount == 0)
                             scheduleFromDb.setDeletedCount(1);
                         else scheduleFromDb.setDeletedCount(scheduleFromDb.getDeletedCount() + 1);
                     }
-                    this.scheduleRepository.save(scheduleFromDb);
+                    // save the existing parent schedule
+                    this.scheduleRepository.saveAndFlush(scheduleFromDb);
                 }
             } else {
                 setReadOnlyBehaviorOnEdit(schedule, clientPurchase);
             }
         }
         schedule.setPurchaseId(clientPurchase.getId());
-        return this.scheduleRepository.save(schedule);
+        // save the schedule finally
+        return this.scheduleRepository.saveAndFlush(schedule);
     }
 
     public void deleteSchedule(Integer id) {
@@ -141,16 +151,42 @@ public class ScheduleService {
             throw new BadRequestException("Invalid recurrence exception string.");
         String recurrenceExceptionDb = schedule.getRecurrenceException();
         if (Objects.nonNull(recurrenceExceptionDb) && !recurrenceExceptionDb.isEmpty()) {
+            // if recurrence exceptions exists then append deleted schedule recurrence exception at the end
             schedule.setRecurrenceException(recurrenceExceptionDb + "," + recurrenceException);
             Integer deletedCount = schedule.getDeletedCount();
             if (Objects.isNull(deletedCount))
                 deletedCount = 0;
             schedule.setDeletedCount(deletedCount + 1);
         } else {
+            // if no recurrence exception was found then simply set the exception
             schedule.setRecurrenceException(recurrenceException);
             schedule.setDeletedCount(1);
         }
         this.scheduleRepository.save(schedule);
+    }
+
+    public void updateScheduleStatus(List<Schedule> schedules, String status) {
+        // for non-recurring schedule
+        schedules.stream().filter(schedule -> Objects.isNull(schedule.getRecurrenceRule()))
+                .peek(schedule -> schedule.setStatus(status))
+                .forEach(schedule -> saveSchedule(schedule, "EDIT", Objects.nonNull(schedule.getRecurrenceRule())));
+        // for recurring schedule with recurrence exception
+        schedules.stream()
+                .filter(schedule -> Objects.nonNull(schedule.getRecurrenceRule()) && Objects.nonNull(schedule.getRecurrenceId()))
+                .map(schedule -> this.scheduleRepository.getById(schedule.getId()))
+                .peek(schedule -> schedule.setStatus(status))
+                .forEach(schedule -> saveSchedule(schedule, "EDIT", Objects.nonNull(schedule.getRecurrenceRule())));
+        // for recurring schedule without recurrence exception
+        schedules.stream()
+                .filter(schedule -> Objects.nonNull(schedule.getRecurrenceRule()) && Objects.isNull(schedule.getRecurrenceId()))
+                .map(Schedule::new)
+                .peek(schedule -> schedule.setRecurrenceException(this.scheduleRecurrenceUtil.getRecurrenceException(schedule.getStartTime())))
+                .peek(schedule -> schedule.setStatus(status))
+                .peek(schedule -> schedule.setId(null))
+                // parent schedule id was stored in series identifier field, fetching that
+                .peek(schedule -> schedule.setRecurrenceId(Integer.parseInt(schedule.getSeriesIdentifier())))
+                .peek(schedule -> schedule.setSeriesIdentifier(null))
+                .forEach(schedule -> saveSchedule(schedule, "EDIT", Objects.nonNull(schedule.getRecurrenceRule())));
     }
 
     public Map<String, Long> getTotalScheduledAndCompleted(Integer id) {

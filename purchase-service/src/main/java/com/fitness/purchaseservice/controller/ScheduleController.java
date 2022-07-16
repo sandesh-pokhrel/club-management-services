@@ -105,6 +105,13 @@ public class ScheduleController {
         return this.scheduleService.saveSchedule(schedule, mode, Objects.nonNull(schedule.getRecurrenceRule()));
     }
 
+    @PatchMapping("/new-status/{status}")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateSchedulesStatus(@RequestBody List<Schedule> schedules,
+                                      @PathVariable String status) {
+        this.scheduleService.updateScheduleStatus(schedules, status);
+    }
+
     @GetMapping("/recurrence-delete/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void saveRecurrenceExceptionForDelete(@PathVariable Integer id,

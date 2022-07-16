@@ -66,11 +66,13 @@ public class ScheduleRecurrenceUtil extends GeneralUtil {
 
     private int getIntervalFromRule(String rule) {
         Map<String, String> ruleMap = tokenizeRuleIntoMap(rule);
+        // interval is stored with key 'interval'
         return Integer.parseInt(ruleMap.get("interval"));
     }
 
     private String getDaysForWeeklyFromRule(String rule) {
         Map<String, String> ruleMap = tokenizeRuleIntoMap(rule);
+        // contains the value like SU, MO, TU etc. values coming from ejs scheduler
         return ruleMap.get("byday");
     }
 
@@ -80,6 +82,7 @@ public class ScheduleRecurrenceUtil extends GeneralUtil {
         int weekDayNumber = calendar.get(Calendar.DAY_OF_WEEK);
         for (Map.Entry<String, Integer> entry : WEEKLY_SCHEDULE_POINT.entrySet()) {
             if (entry.getValue() == weekDayNumber) {
+                // returns the key like su, mo matching the value from map to the start date time
                 return entry.getKey();
             }
         }
@@ -107,34 +110,43 @@ public class ScheduleRecurrenceUtil extends GeneralUtil {
         }
         if (temp == null)
             throw new RuntimeException("Weekly schedule initial increment fetch failed!");
+        // eg: for wednesday to thursday = (7-4)+(7*(1-1))+5 .. here thursday is 5 and wednesday is 4 and interval is 1
         return (7 - weekDayNumber) + (7 * (interval - 1)) + temp;
     }
 
     private Map<String, Integer> calculateDaysToAddForWeeklySchedule(List<String> byDays, int interval) {
         Map<String, Integer> dayCostMap = new HashMap<>();
         if (byDays.isEmpty()) throw new RuntimeException("Invalid weekly recurrent rule!");
+        // if only single day then just add 7 days + the interval specified
         else if (byDays.size() == 1) dayCostMap.put(byDays.get(0), 7 + (7 * (interval - 1)));
         for (String byDay : byDays) {
             if (byDays.indexOf(byDay) < (byDays.size() - 1)) {
+                // if block in case of not the last element
+                // get the next day
                 String nextByDay = byDays.get(byDays.indexOf(byDay) + 1);
                 int cost = Math.abs(WEEKLY_SCHEDULE_POINT.get(byDay.toLowerCase()) - WEEKLY_SCHEDULE_POINT.get(nextByDay.toLowerCase()));
+                // set the difference between two days
                 dayCostMap.put(byDay, cost);
             } else {
+                // else block if the element is last one
+                // calculate the remaining days eg. if wed then 7-4
                 int lastItemRemainingCost = 7 - WEEKLY_SCHEDULE_POINT.get(byDay.toLowerCase());
                 int firstItemCost = WEEKLY_SCHEDULE_POINT.get(byDays.get(0).toLowerCase());
+                // set the cost to remaining + first item cost + the interval
                 dayCostMap.put(byDay, lastItemRemainingCost + (7 * (interval - 1)) + firstItemCost);
             }
         }
         return dayCostMap;
     }
 
-    private String getRecurrenceException(Date startDateTime) {
+    public String getRecurrenceException(Date startDateTime) {
         DateFormat formatterUTC = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
         formatterUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
         return formatterUTC.format(startDateTime);
     }
 
 
+    // This is not used right now as daily agenda recurrence is disabled from front end
     private List<Schedule> getAgendaForDaily(Schedule parentSchedule, List<Schedule> childSchedules) {
         List<Schedule> finalSchedules = new ArrayList<>();
         long scheduleCount = getCountFromRule(parentSchedule.getRecurrenceRule(), RULE_EVALUATION);
@@ -166,9 +178,13 @@ public class ScheduleRecurrenceUtil extends GeneralUtil {
         List<Schedule> finalSchedules = new ArrayList<>();
         long scheduleCount = getCountFromRule(parentSchedule.getRecurrenceRule(), RULE_EVALUATION);
         int interval = getIntervalFromRule(parentSchedule.getRecurrenceRule());
+        // get the days like su,mo etc... multiple days is disabled from front end as of now so only single day will be in this list
         List<String> byDays = Arrays.asList(getDaysForWeeklyFromRule(parentSchedule.getRecurrenceRule()).split(","));
+        // get the initial increment, ie.. diff between two days like su, wed and the interval between them
         int initialIncrement = getInitialIncrementForWeeklySchedule(byDays, parentSchedule.getStartTime(), interval);
+        // contains the cost to move around from one date to another
         Map<String, Integer> dayCostMap = calculateDaysToAddForWeeklySchedule(byDays, interval);
+        // store the recurrence exceptions contained in the parent
         List<String> parentRecurrenceExceptions = Objects.isNull(parentSchedule.getRecurrenceException()) ? Collections.singletonList("")
                 : Arrays.asList(parentSchedule.getRecurrenceException().split(","));
         parentSchedule.setStartTime(DateUtils.addDays(parentSchedule.getStartTime(), initialIncrement));
@@ -179,20 +195,30 @@ public class ScheduleRecurrenceUtil extends GeneralUtil {
             Schedule resultSchedule;
             String recurrenceException = getRecurrenceException(startTimeTracked);
             if (!parentRecurrenceExceptions.contains(recurrenceException)) {
+                // if parent recurrence exceptions does not contain the new exception
+                // then create new schedule and store it
                 resultSchedule = new Schedule(parentSchedule);
+                resultSchedule.setRecurrenceException(null);
+
+                // setting seriesIdentifier just to find out the parent of the created schedule
+                resultSchedule.setSeriesIdentifier(String.valueOf(parentSchedule.getId()));
                 if (!(i == 0)) {
+
                     resultSchedule.setStartTime(startTimeTracked);
                     resultSchedule.setEndTime(endTimeTracked);
                 }
                 startTimeTracked = DateUtils.addDays(startTimeTracked, dayCostMap.get(getWeekDayName(startTimeTracked)));
                 endTimeTracked = DateUtils.addDays(endTimeTracked, dayCostMap.get(getWeekDayName(startTimeTracked)));
             } else {
+                // if parent recurrence exceptions does contains the exception
+                // then no need to create the new schedule
                 Schedule modifiedSchedule = childSchedules.stream()
                         .filter(schedule -> schedule.getRecurrenceException().equals(recurrenceException))
                         .findFirst().orElse(null);
                 startTimeTracked = DateUtils.addDays(startTimeTracked, dayCostMap.get(getWeekDayName(startTimeTracked)));
                 endTimeTracked = DateUtils.addDays(endTimeTracked, dayCostMap.get(getWeekDayName(startTimeTracked)));
                 if (Objects.isNull(modifiedSchedule)) continue;
+                // create the schedule from the edited instance of recurrent schedule
                 resultSchedule = new Schedule(modifiedSchedule);
             }
             finalSchedules.add(resultSchedule);
