@@ -83,7 +83,7 @@ public class ScheduleController {
                                           @RequestParam("trainers") List<String> trainers,
                                           @RequestParam("trainer") String trainer) {
         List<Schedule> schedules = this.scheduleService.getAllSchedulesByClientsAndTrainers(clubId, clients, trainers);
-        calculateBlockedSchedules(schedules, trainer);
+        //calculateBlockedSchedules(schedules, trainer);
         return schedules;
     }
 
