@@ -1,7 +1,6 @@
 package com.fitness.authservice.controller;
 
 import com.fitness.authservice.feign.ClubFeignClient;
-import com.fitness.authservice.model.Club;
 import com.fitness.authservice.model.Role;
 import com.fitness.authservice.model.User;
 import com.fitness.authservice.model.UserLevel;
