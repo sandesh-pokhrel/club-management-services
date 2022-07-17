@@ -22,6 +22,7 @@ public interface ClientPurchaseInstallmentRepository extends JpaRepository<Clien
             "join club_management_clients.client c " +
             "on cp.client_username = c.username " +
             "where (c.club_id = :clubId and cpi.expected_pay_date between :fromDate and :toDate) " +
-            "and (cp.client_username like %:search% ) ", nativeQuery = true)
+            "and (c.username like %:search% or c.first_name like %:search% or c.last_name like %:search%) ",
+            nativeQuery = true)
     Page<ClientPurchaseInstallment> search(Date fromDate, Date toDate, String search, Integer clubId, Pageable pageable);
 }
