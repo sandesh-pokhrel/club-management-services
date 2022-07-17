@@ -26,4 +26,7 @@ public class ClientPurchaseInstallment extends AuditEntity{
     private Boolean isPif;
     private String status;
     private String paymentMethod;
+
+    @Transient
+    private ClientPurchase clientPurchase;
 }
